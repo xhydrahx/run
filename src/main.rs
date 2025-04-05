@@ -1,3 +1,5 @@
+mod calc;
+
 fn main() {
-    println!("Hello, world!");
+    calc::run();
 }
