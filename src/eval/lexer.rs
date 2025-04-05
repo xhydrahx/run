@@ -1,5 +1,5 @@
-use std::str::Chars;
 use super::types::Token;
+use std::str::Chars;
 
 pub struct Lexer<'a> {
     input: Chars<'a>,
@@ -29,24 +29,16 @@ impl<'a> Lexer<'a> {
                     tokens.push(Token::Number(c.to_digit(10).unwrap() as f64));
                     self.advance();
                 }
-                '+' => {
-                    tokens.push(Token::Plus);
+                '+' | '-' | '*' | '/' | '^' => {
+                    tokens.push(Token::Operator(c));
                     self.advance();
                 }
-                '-' => {
-                    tokens.push(Token::Minus);
-                    self.advance();
-                }
-                '*' => {
-                    tokens.push(Token::Multiply);
-                    self.advance();
-                }
-                '/' => {
-                    tokens.push(Token::Divide);
+                '(' | ')' => {
+                    tokens.push(Token::Parenthesis(c));
                     self.advance();
                 }
                 _ => {
-                    self.advance();
+                    panic!("Unknown charecter: {}", c);
                 }
             }
         }
