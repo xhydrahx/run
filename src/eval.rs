@@ -1,14 +1,10 @@
-use lexer::Lexer;
-use parser::parse;
-
 mod lexer;
 mod types;
-mod parser;
+mod rpn;
 
-pub fn run<'a>(input: &'a str) {
-    let mut lexer = Lexer::new(input);
-    let tokens = lexer.lex();
-    let rpn = parse(tokens.clone());
+pub fn run<'a>(input: &str) {
+    let tokens = lexer::lex(input);
+    let rpn = rpn::into(tokens.clone());
     println!("Tokens: {:?}", tokens);
     println!("Rpn: {:?}", rpn);
 }
