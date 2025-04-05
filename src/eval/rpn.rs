@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use super::types::{get_operator_info, Associativity, Token};
 
-pub fn parse(tokens: Vec<Token>) -> Vec<Token> {
+pub fn into(tokens: Vec<Token>) -> Vec<Token> {
     let mut output = Vec::new();
     let mut operators = VecDeque::new();
 

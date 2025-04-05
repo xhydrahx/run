@@ -1,47 +1,28 @@
 use super::types::Token;
-use std::str::Chars;
 
-pub struct Lexer<'a> {
-    input: Chars<'a>,
-    current_char: Option<char>,
-}
-
-impl<'a> Lexer<'a> {
-    pub fn new(input: &'a str) -> Self {
-        let mut lexer = Lexer {
-            input: input.chars(),
-            current_char: None,
-        };
-        lexer.advance();
-        lexer
-    }
-
-    fn advance(&mut self) {
-        self.current_char = self.input.next();
-    }
-
-    pub fn lex(&mut self) -> Vec<Token> {
-        let mut tokens = Vec::new();
-        while let Some(c) = self.current_char {
-            match c {
-                ' ' | '\n' | '\t' => self.advance(),
-                c if c.is_digit(10) => {
-                    tokens.push(Token::Number(c.to_digit(10).unwrap() as f64));
-                    self.advance();
+pub fn lex(input: &str) -> Vec<Token> {
+    let mut tokens = Vec::new();
+    let mut chars = input.chars().peekable();
+    
+    while let Some(ch) = chars.next() {
+        match ch {
+            '+' | '-' | '*' | '/' | '^' => tokens.push(Token::Operator(ch)),
+            '(' | ')' => tokens.push(Token::Parenthesis(ch)),  // Only match '(' and ')'
+            '0'..='9' | '.' => {
+                let mut number = ch.to_string();
+                while let Some(&next_ch) = chars.peek() {
+                    if next_ch.is_digit(10) || next_ch == '.' {
+                        number.push(chars.next().unwrap());
+                    } else {
+                        break;
+                    }
                 }
-                '+' | '-' | '*' | '/' | '^' => {
-                    tokens.push(Token::Operator(c));
-                    self.advance();
-                }
-                '(' | ')' => {
-                    tokens.push(Token::Parenthesis(c));
-                    self.advance();
-                }
-                _ => {
-                    panic!("Unknown charecter: {}", c);
-                }
+                tokens.push(Token::Number(number.parse().unwrap()));
             }
+            _ if ch.is_whitespace() => continue,
+            _ => panic!("Invalid character found in input."),
         }
-        tokens
     }
+    
+    tokens
 }
