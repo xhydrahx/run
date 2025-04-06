@@ -1,5 +1,5 @@
-use std::str::Chars;
 use super::types::Token;
+use std::str::Chars;
 
 pub struct Lexer<'a> {
     input: Chars<'a>,
@@ -45,9 +45,15 @@ impl<'a> Lexer<'a> {
                     tokens.push(Token::Divide);
                     self.advance();
                 }
-                _ => {
+                '(' => {
+                    tokens.push(Token::LeftParen);
                     self.advance();
                 }
+                ')' => {
+                    tokens.push(Token::RightParen);
+                    self.advance();
+                }
+                _ => self.advance(),
             }
         }
         tokens
