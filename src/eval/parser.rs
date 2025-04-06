@@ -77,18 +77,18 @@ impl<'a> Parser<'a> {
         let right = self.expression(precedence + 1)?;
 
         match token {
-            Token::Plus => Ok(Ast::Plus(Box::new(left), Box::new(right))),
-            Token::Minus => Ok(Ast::Minus(Box::new(left), Box::new(right))),
-            Token::Multiply => Ok(Ast::Multiply(Box::new(left), Box::new(right))),
-            Token::Divide => Ok(Ast::Divide(Box::new(left), Box::new(right))),
+            Token::Addition => Ok(Ast::Addition(Box::new(left), Box::new(right))),
+            Token::Subtraction => Ok(Ast::Minus(Box::new(left), Box::new(right))),
+            Token::Multiplication => Ok(Ast::Multiplication(Box::new(left), Box::new(right))),
+            Token::Division => Ok(Ast::Division(Box::new(left), Box::new(right))),
             _ => Err(format!("Unexpected infix token: {:?}", token)),
         }
     }
 
     fn get_precedence(token: &Token) -> u8 {
         match token {
-            Token::Plus | Token::Minus => 1,
-            Token::Multiply | Token::Divide => 2,
+            Token::Addition | Token::Subtraction => 1,
+            Token::Multiplication | Token::Division => 2,
             _ => 0,
         }
     }
