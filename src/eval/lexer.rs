@@ -30,19 +30,19 @@ impl<'a> Lexer<'a> {
                     self.advance();
                 }
                 '+' => {
-                    tokens.push(Token::Plus);
+                    tokens.push(Token::Addition);
                     self.advance();
                 }
                 '-' => {
-                    tokens.push(Token::Minus);
+                    tokens.push(Token::Subtraction);
                     self.advance();
                 }
                 '*' => {
-                    tokens.push(Token::Multiply);
+                    tokens.push(Token::Multiplication);
                     self.advance();
                 }
                 '/' => {
-                    tokens.push(Token::Divide);
+                    tokens.push(Token::Division);
                     self.advance();
                 }
                 '(' => {
