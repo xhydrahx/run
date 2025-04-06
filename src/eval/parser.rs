@@ -45,21 +45,17 @@ impl<'a> Parser<'a> {
 
     fn infix(&mut self, left: Ast, token: &Token) -> Result<Ast, String> {
         let precedence = Self::get_precedence(token);
+        let right = self.expression(precedence + 1)?;
+
         match token {
-            Token::Plus => {
-                let right = self.expression(precedence + 1)?;
-                Ok(Ast::Plus(Box::new(left), Box::new(right)))
-            }
+            Token::Plus => Ok(Ast::Plus(Box::new(left), Box::new(right))),
             Token::Minus => {
-                let right = self.expression(precedence + 1)?;
                 Ok(Ast::Minus(Box::new(left), Box::new(right)))
             }
             Token::Multiply => {
-                let right = self.expression(precedence + 1)?;
                 Ok(Ast::Multiply(Box::new(left), Box::new(right)))
             }
             Token::Divide => {
-                let right = self.expression(precedence + 1)?;
                 Ok(Ast::Divide(Box::new(left), Box::new(right)))
             }
             _ => Err(format!("Unexpected infix token: {:?}", token)),
