@@ -46,24 +46,22 @@ impl<'a> Parser<'a> {
 
     fn paren(&mut self) -> Result<Ast, String> {
         let mut depth = 1;
-        let mut inner_tokens = Vec::new();
+        let mut tokens = Vec::new();
 
-        while let Some(&next_token) = self.tokens.peek() {
-            self.tokens.next();
-
-            match next_token {
+        while let Some(token) = self.tokens.next() {
+            match token {
                 Token::LeftParen => {
                     depth += 1;
-                    inner_tokens.push(next_token.clone());
+                    tokens.push(token.clone());
                 }
                 Token::RightParen => {
                     depth -= 1;
                     if depth == 0 {
                         break;
                     }
-                    inner_tokens.push(next_token.clone());
+                    tokens.push(token.clone());
                 }
-                _ => inner_tokens.push(next_token.clone()),
+                _ => tokens.push(token.clone()),
             }
         }
 
@@ -71,8 +69,7 @@ impl<'a> Parser<'a> {
             return Err("Unclosed parenthesis".into());
         }
 
-        let mut inner_parser = Parser::new(&inner_tokens);
-        inner_parser.parse()
+        Parser::new(&tokens).parse()
     }
 
     fn infix(&mut self, left: Ast, token: &Token) -> Result<Ast, String> {
