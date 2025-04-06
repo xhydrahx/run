@@ -20,7 +20,7 @@ impl<'a> Parser<'a> {
         let mut left = self.primary()?;
 
         while let Some(&token) = self.tokens.peek() {
-            let token_precedence = Self::get_precedence(token);
+            let token_precedence = Self::precedence(token);
             if token_precedence < precedence {
                 break;
             }
@@ -73,19 +73,19 @@ impl<'a> Parser<'a> {
     }
 
     fn infix(&mut self, left: Ast, token: &Token) -> Result<Ast, String> {
-        let precedence = Self::get_precedence(token);
+        let precedence = Self::precedence(token);
         let right = self.expression(precedence + 1)?;
 
         match token {
             Token::Addition => Ok(Ast::Addition(Box::new(left), Box::new(right))),
-            Token::Subtraction => Ok(Ast::Minus(Box::new(left), Box::new(right))),
+            Token::Subtraction => Ok(Ast::Subtraction(Box::new(left), Box::new(right))),
             Token::Multiplication => Ok(Ast::Multiplication(Box::new(left), Box::new(right))),
             Token::Division => Ok(Ast::Division(Box::new(left), Box::new(right))),
             _ => Err(format!("Unexpected infix token: {:?}", token)),
         }
     }
 
-    fn get_precedence(token: &Token) -> u8 {
+    fn precedence(token: &Token) -> u8 {
         match token {
             Token::Addition | Token::Subtraction => 1,
             Token::Multiplication | Token::Division => 2,
