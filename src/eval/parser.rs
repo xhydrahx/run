@@ -36,11 +36,43 @@ impl<'a> Parser<'a> {
         if let Some(token) = self.tokens.next() {
             match token {
                 Token::Number(value) => Ok(Ast::Number(value.clone())),
+                Token::LeftParen => self.paren(),
                 _ => Err(format!("Unexpected token: {:?}", token)),
             }
         } else {
             Err("Unexpected end of tokens".to_string())
         }
+    }
+
+    fn paren(&mut self) -> Result<Ast, String> {
+        let mut depth = 1;
+        let mut inner_tokens = Vec::new();
+
+        while let Some(&next_token) = self.tokens.peek() {
+            self.tokens.next();
+
+            match next_token {
+                Token::LeftParen => {
+                    depth += 1;
+                    inner_tokens.push(next_token.clone());
+                }
+                Token::RightParen => {
+                    depth -= 1;
+                    if depth == 0 {
+                        break;
+                    }
+                    inner_tokens.push(next_token.clone());
+                }
+                _ => inner_tokens.push(next_token.clone()),
+            }
+        }
+
+        if depth != 0 {
+            return Err("Unclosed parenthesis".into());
+        }
+
+        let mut inner_parser = Parser::new(&inner_tokens);
+        inner_parser.parse()
     }
 
     fn infix(&mut self, left: Ast, token: &Token) -> Result<Ast, String> {
@@ -49,24 +81,18 @@ impl<'a> Parser<'a> {
 
         match token {
             Token::Plus => Ok(Ast::Plus(Box::new(left), Box::new(right))),
-            Token::Minus => {
-                Ok(Ast::Minus(Box::new(left), Box::new(right)))
-            }
-            Token::Multiply => {
-                Ok(Ast::Multiply(Box::new(left), Box::new(right)))
-            }
-            Token::Divide => {
-                Ok(Ast::Divide(Box::new(left), Box::new(right)))
-            }
+            Token::Minus => Ok(Ast::Minus(Box::new(left), Box::new(right))),
+            Token::Multiply => Ok(Ast::Multiply(Box::new(left), Box::new(right))),
+            Token::Divide => Ok(Ast::Divide(Box::new(left), Box::new(right))),
             _ => Err(format!("Unexpected infix token: {:?}", token)),
         }
     }
 
     fn get_precedence(token: &Token) -> u8 {
         match token {
-            Token::Number(_) => 0,
             Token::Plus | Token::Minus => 1,
             Token::Multiply | Token::Divide => 2,
+            _ => 0,
         }
     }
 }

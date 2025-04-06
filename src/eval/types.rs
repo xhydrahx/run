@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Number(f64),
 
@@ -6,6 +6,9 @@ pub enum Token {
     Minus,
     Multiply,
     Divide,
+
+    LeftParen,
+    RightParen,
 }
 
 #[derive(Debug)]
