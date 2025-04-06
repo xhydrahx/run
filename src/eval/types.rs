@@ -2,10 +2,10 @@
 pub enum Token {
     Number(f64),
 
-    Plus,
-    Minus,
-    Multiply,
-    Divide,
+    Addition,
+    Subtraction,
+    Multiplication,
+    Division,
 
     LeftParen,
     RightParen,
@@ -15,8 +15,8 @@ pub enum Token {
 pub enum Ast {
     Number(f64),
 
-    Plus(Box<Ast>, Box<Ast>),
-    Minus(Box<Ast>, Box<Ast>),
-    Multiply(Box<Ast>, Box<Ast>),
-    Divide(Box<Ast>, Box<Ast>),
+    Addition(Box<Ast>, Box<Ast>),
+    Subtraction(Box<Ast>, Box<Ast>),
+    Multiplication(Box<Ast>, Box<Ast>),
+    Division(Box<Ast>, Box<Ast>),
 }
