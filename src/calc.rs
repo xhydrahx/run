@@ -1,5 +1,5 @@
-use std::io::{stdin, stdout, Write};
-use crate::eval;
+use crate::eval::Eval;
+use std::io::{Write, stdin, stdout};
 
 struct Calc {
     prompt: String,
@@ -26,7 +26,8 @@ impl Calc {
 
 pub fn run() {
     let calc = Calc::new(">");
+    let eval = Eval::new();
     loop {
-        eval::run(&calc.input());
+        eval.eval(&calc.input());
     }
 }
