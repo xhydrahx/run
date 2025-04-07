@@ -81,6 +81,7 @@ impl<'a> Parser<'a> {
             Token::Subtraction => Ok(Ast::Subtraction(Box::new(left), Box::new(right))),
             Token::Multiplication => Ok(Ast::Multiplication(Box::new(left), Box::new(right))),
             Token::Division => Ok(Ast::Division(Box::new(left), Box::new(right))),
+            Token::Exponent => Ok(Ast::Exponent(Box::new(left), Box::new(right))),
             _ => Err(format!("Unexpected infix token: {:?}", token)),
         }
     }
@@ -89,6 +90,7 @@ impl<'a> Parser<'a> {
         match token {
             Token::Addition | Token::Subtraction => 1,
             Token::Multiplication | Token::Division => 2,
+            Token::Exponent => 3,
             _ => 0,
         }
     }

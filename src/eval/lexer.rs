@@ -45,6 +45,10 @@ impl<'a> Lexer<'a> {
                     tokens.push(Token::Division);
                     self.advance();
                 }
+                '^' => {
+                    tokens.push(Token::Exponent);
+                    self.advance();
+                }
                 '(' => {
                     tokens.push(Token::LeftParen);
                     self.advance();
