@@ -26,14 +26,18 @@ impl Eval {
     fn expression(&self, node: &Ast) -> f64 {
         match node {
             Ast::Number(value) => value.clone(),
-            Ast::Addition(left, right) => self.addition(left, right),
-            Ast::Subtraction(left, right) => self.subtraction(left, right),
-            Ast::Multiplication(left, right) => self.multiplication(left, right),
-            Ast::Division(left, right) => self.division(left, right),
+            Ast::Addition(left, right) => self.arithmetic(left, right, |x, y| x + y),
+            Ast::Subtraction(left, right) => self.arithmetic(left, right, |x, y| x - y),
+            Ast::Multiplication(left, right) => self.arithmetic(left, right, |x, y| x * y),
+            Ast::Division(left, right) => self.arithmetic(left, right, |x, y| x / y),
+            Ast::Exponent(left, right) => self.arithmetic(left, right, |x, y| x.powf(y)),
         }
     }
 
-    fn addition(&self, left: &Ast, right: &Ast) -> f64 {
+    fn arithmetic<F>(&self, left: &Ast, right: &Ast, operation: F) -> f64
+    where
+        F: Fn(f64, f64) -> f64,
+    {
         let x = match left {
             Ast::Number(value) => value.clone(),
             _ => self.expression(&left),
@@ -43,45 +47,6 @@ impl Eval {
             _ => self.expression(&right),
         };
 
-        x + y
-    }
-
-    fn subtraction(&self, left: &Ast, right: &Ast) -> f64 {
-        let x = match left {
-            Ast::Number(value) => value.clone(),
-            _ => self.expression(&left),
-        };
-        let y = match right {
-            Ast::Number(value) => value.clone(),
-            _ => self.expression(&right),
-        };
-
-        x - y
-    }
-
-    fn multiplication(&self, left: &Ast, right: &Ast) -> f64 {
-        let x = match left {
-            Ast::Number(value) => value.clone(),
-            _ => self.expression(&left),
-        };
-        let y = match right {
-            Ast::Number(value) => value.clone(),
-            _ => self.expression(&right),
-        };
-
-        x * y
-    }
-
-    fn division(&self, left: &Ast, right: &Ast) -> f64 {
-        let x = match left {
-            Ast::Number(value) => value.clone(),
-            _ => self.expression(&left),
-        };
-        let y = match right {
-            Ast::Number(value) => value.clone(),
-            _ => self.expression(&right),
-        };
-
-        x / y
+        operation(x, y)
     }
 }
