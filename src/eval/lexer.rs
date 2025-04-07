@@ -25,9 +25,19 @@ impl<'a> Lexer<'a> {
         while let Some(c) = self.current_char {
             match c {
                 ' ' | '\n' | '\t' => self.advance(),
-                c if c.is_digit(10) => {
-                    tokens.push(Token::Number(c.to_digit(10).unwrap() as f64));
-                    self.advance();
+                '0'..'9' | '.' => {
+                    let mut number_str = String::new();
+                    while let Some(c) = self.current_char {
+                        if c.is_digit(10) {
+                            number_str.push(c);
+                        } else if c == '.' {
+                            number_str.push(c);
+                        } else {
+                            break;
+                        }
+                        self.advance();
+                    }
+                    tokens.push(Token::Number(number_str.parse::<f64>().expect("Failed to parse a string into a number")));
                 }
                 '+' => {
                     tokens.push(Token::Addition);
