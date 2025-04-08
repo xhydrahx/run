@@ -18,14 +18,14 @@ impl Eval {
         let tokens = match lexer.lex() {
             Ok(tokens) => tokens,
             Err(e) => {
-                eprintln!("{e}");
+                eprintln!("Error: {e}");
                 return;
             }
         };
         let mut parser = Parser::new(&tokens);
         match parser.parse() {
             Ok(ast) => println!("{}", self.expression(&ast)),
-            Err(e) => eprintln!("{e}"),
+            Err(e) => eprintln!("Error: {e}"),
         };
     }
 
