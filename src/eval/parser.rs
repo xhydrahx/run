@@ -61,10 +61,10 @@ impl<'a> Parser<'a> {
                     }
                     _ => Err("Incorrect usage of root function".into()),
                 },
-                _ => Err(format!("Unexpected token: {:?}", token)),
+                _ => Err("Unexpected symbol".into()),
             }
         } else {
-            Err("Unexpected end of tokens".to_string())
+            Err("Unexpected end of expression".into())
         }
     }
 
@@ -106,7 +106,7 @@ impl<'a> Parser<'a> {
             Token::Multiplication => Ok(Ast::Multiplication(Box::new(left), Box::new(right))),
             Token::Division => Ok(Ast::Division(Box::new(left), Box::new(right))),
             Token::Exponent => Ok(Ast::Exponent(Box::new(left), Box::new(right))),
-            _ => Err(format!("Unexpected infix token: {:?}", token)),
+            _ => Err("Unexpected infix symbol".into()),
         }
     }
 
