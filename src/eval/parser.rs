@@ -49,15 +49,25 @@ impl<'a> Parser<'a> {
                         }
 
                         let mut index = Vec::new();
+                        let mut depth = 1;
                         while let Some(next_token) = self.tokens.next() {
+                            if next_token == &Token::LeftParen {
+                                depth += 1;
+                            }
                             if next_token == &Token::RightParen {
-                                break;
+                                depth -= 1;
+                                if depth == 0 {
+                                    break;
+                                }
                             }
 
                             index.push(next_token.clone());
                         }
 
-                        Ok(Ast::Root(Box::new(Parser::new(&radicand).parse()?), Box::new(Parser::new(&index).parse()?)))
+                        Ok(Ast::Root(
+                            Box::new(Parser::new(&radicand).parse()?),
+                            Box::new(Parser::new(&index).parse()?),
+                        ))
                     }
                     _ => Err("Incorrect Usage Of Root Function".into()),
                 },
