@@ -31,6 +31,7 @@ impl Eval {
             Ast::Multiplication(left, right) => self.arithmetic(left, right, |x, y| x * y),
             Ast::Division(left, right) => self.arithmetic(left, right, |x, y| x / y),
             Ast::Exponent(left, right) => self.arithmetic(left, right, |x, y| x.powf(y)),
+            Ast::Root(left, right) => self.arithmetic(left, right, |x, y| x.powf(1.0 / y)),
         }
     }
 
