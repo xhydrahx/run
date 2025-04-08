@@ -15,7 +15,13 @@ impl Eval {
 
     pub fn eval<'a>(&self, input: &'a str) {
         let mut lexer = Lexer::new(input);
-        let tokens = lexer.lex();
+        let tokens = match lexer.lex() {
+            Ok(tokens) => tokens,
+            Err(e) => {
+                eprintln!("{e}");
+                return;
+            }
+        };
         let mut parser = Parser::new(&tokens);
         match parser.parse() {
             Ok(ast) => println!("{}", self.expression(&ast)),

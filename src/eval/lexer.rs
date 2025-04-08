@@ -20,25 +20,25 @@ impl<'a> Lexer<'a> {
         self.current_char = self.input.next();
     }
 
-    pub fn lex(&mut self) -> Vec<Token> {
+    pub fn lex(&mut self) -> Result<Vec<Token>, String> {
         let mut tokens = Vec::new();
         while let Some(c) = self.current_char {
             match c {
                 ' ' | '\n' | '\t' => self.advance(),
                 '0'..'9' | '.' => {
-                    let mut number_str = String::new();
+                    let mut number = String::new();
                     while let Some(c) = self.current_char {
                         if c.is_digit(10) {
-                            number_str.push(c);
+                            number.push(c);
                         } else if c == '.' {
-                            number_str.push(c);
+                            number.push(c);
                         } else {
                             break;
                         }
                         self.advance();
                     }
                     tokens.push(Token::Number(
-                        number_str
+                        number
                             .parse::<f64>()
                             .expect("Failed to parse a string into a number"),
                     ));
@@ -65,12 +65,12 @@ impl<'a> Lexer<'a> {
                 }
                 'r' => {
                     let mut ident = String::new();
-                    while let Some(c) = self.current_char {
+                    for _i in 1..4 {
                         if c.is_alphabetic() {
                             ident.push(c);
                             self.advance();
                         } else {
-                            break;
+                            return Err("Unknown Symbol".into());
                         }
                     }
 
@@ -90,9 +90,11 @@ impl<'a> Lexer<'a> {
                     tokens.push(Token::RightParen);
                     self.advance();
                 }
-                _ => self.advance(),
+                _ => {
+                    return Err("Unknown Symbol".into());
+                }
             }
         }
-        tokens
+        Ok(tokens)
     }
 }
