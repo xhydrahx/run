@@ -59,12 +59,12 @@ impl<'a> Parser<'a> {
 
                         Ok(Ast::Root(Box::new(Parser::new(&radicand).parse()?), Box::new(Parser::new(&index).parse()?)))
                     }
-                    _ => Err("Incorrect usage of root function".into()),
+                    _ => Err("Incorrect Usage Of Root Function".into()),
                 },
-                _ => Err("Unexpected symbol".into()),
+                _ => Err("Unexpected Symbol".into()),
             }
         } else {
-            Err("Unexpected end of expression".into())
+            Err("Unexpected End Of Expression".into())
         }
     }
 
@@ -90,7 +90,7 @@ impl<'a> Parser<'a> {
         }
 
         if depth != 0 {
-            return Err("Unclosed parenthesis".into());
+            return Err("Unclosed Parenthesis".into());
         }
 
         Parser::new(&tokens).parse()
@@ -106,7 +106,7 @@ impl<'a> Parser<'a> {
             Token::Multiplication => Ok(Ast::Multiplication(Box::new(left), Box::new(right))),
             Token::Division => Ok(Ast::Division(Box::new(left), Box::new(right))),
             Token::Exponent => Ok(Ast::Exponent(Box::new(left), Box::new(right))),
-            _ => Err("Unexpected infix symbol".into()),
+            _ => Err("Unexpected Infix Symbol".into()),
         }
     }
 
