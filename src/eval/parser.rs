@@ -37,6 +37,30 @@ impl<'a> Parser<'a> {
             match token {
                 Token::Number(value) => Ok(Ast::Number(value.clone())),
                 Token::LeftParen => self.paren(),
+                Token::Root => match self.tokens.next() {
+                    Some(Token::LeftParen) => {
+                        let mut radicand = Vec::new();
+                        while let Some(next_token) = self.tokens.next() {
+                            if next_token == &Token::Comma {
+                                break;
+                            }
+
+                            radicand.push(next_token.clone());
+                        }
+
+                        let mut index = Vec::new();
+                        while let Some(next_token) = self.tokens.next() {
+                            if next_token == &Token::RightParen {
+                                break;
+                            }
+
+                            index.push(next_token.clone());
+                        }
+
+                        Ok(Ast::Root(Box::new(Parser::new(&radicand).parse()?), Box::new(Parser::new(&index).parse()?)))
+                    }
+                    _ => Err("Incorrect usage of root function".into()),
+                },
                 _ => Err(format!("Unexpected token: {:?}", token)),
             }
         } else {

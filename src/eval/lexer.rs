@@ -37,7 +37,11 @@ impl<'a> Lexer<'a> {
                         }
                         self.advance();
                     }
-                    tokens.push(Token::Number(number_str.parse::<f64>().expect("Failed to parse a string into a number")));
+                    tokens.push(Token::Number(
+                        number_str
+                            .parse::<f64>()
+                            .expect("Failed to parse a string into a number"),
+                    ));
                 }
                 '+' => {
                     tokens.push(Token::Addition);
@@ -57,6 +61,25 @@ impl<'a> Lexer<'a> {
                 }
                 '^' => {
                     tokens.push(Token::Exponent);
+                    self.advance();
+                }
+                'r' => {
+                    let mut ident = String::new();
+                    while let Some(c) = self.current_char {
+                        if c.is_alphabetic() {
+                            ident.push(c);
+                            self.advance();
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if ident == "root" {
+                        tokens.push(Token::Root);
+                    }
+                }
+                ',' => {
+                    tokens.push(Token::Comma);
                     self.advance();
                 }
                 '(' => {

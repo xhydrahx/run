@@ -8,9 +8,11 @@ pub enum Token {
     Division,
 
     Exponent,
+    Root,
 
     LeftParen,
     RightParen,
+    Comma,
 }
 
 #[derive(Debug)]
@@ -23,4 +25,5 @@ pub enum Ast {
     Division(Box<Ast>, Box<Ast>),
 
     Exponent(Box<Ast>, Box<Ast>),
+    Root(Box<Ast>, Box<Ast>),
 }
