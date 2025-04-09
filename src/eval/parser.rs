@@ -34,47 +34,57 @@ impl<'a> Parser<'a> {
 
     fn primary(&mut self) -> Result<Ast, String> {
         if let Some(token) = self.tokens.next() {
-            match token {
-                Token::Number(value) => Ok(Ast::Number(value.clone())),
-                Token::LeftParen => self.paren(),
-                Token::Root => match self.tokens.next() {
-                    Some(Token::LeftParen) => {
-                        let mut radicand = Vec::new();
-                        while let Some(next_token) = self.tokens.next() {
-                            if next_token == &Token::Comma {
-                                break;
-                            }
-
-                            radicand.push(next_token.clone());
-                        }
-
-                        let mut index = Vec::new();
-                        let mut depth = 1;
-                        while let Some(next_token) = self.tokens.next() {
-                            if next_token == &Token::LeftParen {
-                                depth += 1;
-                            }
-                            if next_token == &Token::RightParen {
-                                depth -= 1;
-                                if depth == 0 {
-                                    break;
-                                }
-                            }
-
-                            index.push(next_token.clone());
-                        }
-
-                        Ok(Ast::Root(
-                            Box::new(Parser::new(&radicand).parse()?),
-                            Box::new(Parser::new(&index).parse()?),
-                        ))
-                    }
-                    _ => Err("Incorrect Usage Of Root Function".into()),
-                },
-                _ => Err("Unexpected Symbol".into()),
+            if let Ok(ast) = self.functions(token) {
+                Ok(ast)
+            } else {
+                match token {
+                    Token::Number(value) => Ok(Ast::Number(value.clone())),
+                    Token::LeftParen => Ok(self.paren()?),
+                    _ => Err("Unexpected symbol".into()),
+                }
             }
         } else {
             Err("Unexpected End Of Expression".into())
+        }
+    }
+
+    fn functions(&mut self, token: &Token) -> Result<Ast, String> {
+        match token {
+            Token::Root => match self.tokens.next() {
+                Some(Token::LeftParen) => {
+                    let mut radicand = Vec::new();
+                    while let Some(next_token) = self.tokens.next() {
+                        if next_token == &Token::Comma {
+                            break;
+                        }
+
+                        radicand.push(next_token.clone());
+                    }
+
+                    let mut index = Vec::new();
+                    let mut depth = 1;
+                    while let Some(next_token) = self.tokens.next() {
+                        if next_token == &Token::LeftParen {
+                            depth += 1;
+                        }
+                        if next_token == &Token::RightParen {
+                            depth -= 1;
+                            if depth == 0 {
+                                break;
+                            }
+                        }
+
+                        index.push(next_token.clone());
+                    }
+
+                    Ok(Ast::Root(
+                        Box::new(Parser::new(&radicand).parse()?),
+                        Box::new(Parser::new(&index).parse()?),
+                    ))
+                }
+                _ => Err("Incorrect Usage Of Root Function".into()),
+            },
+            _ => Err("Unknown function".into()),
         }
     }
 
