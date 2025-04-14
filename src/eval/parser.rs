@@ -41,6 +41,7 @@ impl<'a> Parser<'a> {
                     Token::Number(value) => Ok(Ast::Number(value.clone())),
                     Token::E => Ok(Ast::Number(consts::E)),
                     Token::Pi => Ok(Ast::Number(consts::PI)),
+                    Token::Phi => Ok(Ast::Number((1.0 + 5.0_f64.sqrt()) / 2.0)),
                     Token::LeftParen => Ok(self.paren()?),
                     _ => Err("Unexpected symbol".into()),
                 }

@@ -16,6 +16,7 @@ pub enum Token {
 
     E,
     Pi,
+    Phi,
 }
 
 #[derive(Debug)]
