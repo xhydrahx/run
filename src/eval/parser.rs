@@ -47,7 +47,7 @@ impl<'a> Parser<'a> {
                 }
             }
         } else {
-            Err("Unexpected End Of Expression".into())
+            Err("Unexpected end of expression".into())
         }
     }
 
@@ -85,7 +85,41 @@ impl<'a> Parser<'a> {
                         Box::new(Parser::new(&index).parse()?),
                     ))
                 }
-                _ => Err("Incorrect Usage Of Root Function".into()),
+                _ => Err("Incorrect isage of root function".into()),
+            },
+            Token::Log => match self.tokens.next() {
+                Some(Token::Underscore) => {
+                    let mut base = Vec::new();
+                    while let Some(next_token) = self.tokens.next() {
+                        if next_token == &Token::LeftParen {
+                            break;
+                        }
+
+                        base.push(next_token.clone());
+                    }
+
+                    let mut argument = Vec::new();
+                    let mut depth = 1;
+                    while let Some(next_token) = self.tokens.next() {
+                        if next_token == &Token::LeftParen {
+                            depth += 1;
+                        }
+                        if next_token == &Token::RightParen {
+                            depth -= 1;
+                            if depth == 0 {
+                                break;
+                            }
+                        }
+
+                        argument.push(next_token.clone());
+                    }
+
+                    Ok(Ast::Log(
+                        Box::new(Parser::new(&base).parse()?),
+                        Box::new(Parser::new(&argument).parse()?),
+                    ))
+                }
+                _ => Err("Incorrect usage of log function".into()),
             },
             _ => Err("Unknown function".into()),
         }
@@ -113,7 +147,7 @@ impl<'a> Parser<'a> {
         }
 
         if depth != 0 {
-            return Err("Unclosed Parenthesis".into());
+            return Err("Unclosed parenthesis".into());
         }
 
         Parser::new(&tokens).parse()
@@ -129,7 +163,7 @@ impl<'a> Parser<'a> {
             Token::Multiplication => Ok(Ast::Multiplication(Box::new(left), Box::new(right))),
             Token::Division => Ok(Ast::Division(Box::new(left), Box::new(right))),
             Token::Exponent => Ok(Ast::Exponent(Box::new(left), Box::new(right))),
-            _ => Err("Unexpected Infix Symbol".into()),
+            _ => Err("Unexpected infix symbol".into()),
         }
     }
 

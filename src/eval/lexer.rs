@@ -96,8 +96,28 @@ impl<'a> Lexer<'a> {
                         }
                     }
                 }
+                'l' => {
+                    let mut ident = String::new();
+                    for _i in 0..3 {
+                        c = self.current_char.unwrap();
+                        if c.is_alphabetic() {
+                            ident.push(c);
+                            self.advance();
+                        } else {
+                            return Err("Unknown Symbol".into());
+                        }
+                    }
+
+                    if ident == "log" {
+                        tokens.push(Token::Log);
+                    }
+                }
                 ',' => {
                     tokens.push(Token::Comma);
+                    self.advance();
+                }
+                '_' => {
+                    tokens.push(Token::Underscore);
                     self.advance();
                 }
                 '(' => {
