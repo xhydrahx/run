@@ -13,6 +13,9 @@ pub enum Token {
     LeftParen,
     RightParen,
     Comma,
+
+    E,
+    Pi,
 }
 
 #[derive(Debug)]

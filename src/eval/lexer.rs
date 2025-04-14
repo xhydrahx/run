@@ -79,6 +79,17 @@ impl<'a> Lexer<'a> {
                         tokens.push(Token::Root);
                     }
                 }
+                'e' => {
+                    tokens.push(Token::E);
+                    self.advance();
+                }
+                'p' => {
+                    self.advance();
+                    if self.current_char == Some('i') {
+                        tokens.push(Token::Pi);
+                        self.advance();
+                    }
+                }
                 ',' => {
                     tokens.push(Token::Comma);
                     self.advance();

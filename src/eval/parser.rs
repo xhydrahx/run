@@ -1,5 +1,5 @@
 use super::types::{Ast, Token};
-use std::{iter::Peekable, slice::Iter};
+use std::{f64::consts, iter::Peekable, slice::Iter};
 
 pub struct Parser<'a> {
     tokens: Peekable<Iter<'a, Token>>,
@@ -39,6 +39,8 @@ impl<'a> Parser<'a> {
             } else {
                 match token {
                     Token::Number(value) => Ok(Ast::Number(value.clone())),
+                    Token::E => Ok(Ast::Number(consts::E)),
+                    Token::Pi => Ok(Ast::Number(consts::PI)),
                     Token::LeftParen => Ok(self.paren()?),
                     _ => Err("Unexpected symbol".into()),
                 }
