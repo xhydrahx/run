@@ -88,6 +88,12 @@ impl<'a> Lexer<'a> {
                     if self.current_char == Some('i') {
                         tokens.push(Token::Pi);
                         self.advance();
+                    } else if self.current_char == Some('h') {
+                        self.advance();
+                        if self.current_char == Some('i') {
+                            tokens.push(Token::Phi);
+                            self.advance();
+                        }
                     }
                 }
                 ',' => {
