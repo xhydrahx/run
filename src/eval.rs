@@ -40,6 +40,9 @@ impl Eval {
             Ast::Root(left, right) => self.double(left, right, |x, y| x.powf(1.0 / y)),
             Ast::Log(left, right) => self.double(left, right, |x, y| y.log(x)),
             Ast::Ln(node) => self.single(node, |x| x.ln()),
+            Ast::Factorial(node) => {
+                self.single(node, |x| (1..=x as u64).map(|n| n as f64).product())
+            }
         }
     }
 
