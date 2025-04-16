@@ -99,6 +99,9 @@ impl<'a> Lexer<'a> {
                 'l' => {
                     let mut ident = String::new();
                     for _i in 0..3 {
+                        if self.current_char.is_none() {
+                            break;
+                        }
                         c = self.current_char.unwrap();
                         if c.is_alphabetic() {
                             ident.push(c);
