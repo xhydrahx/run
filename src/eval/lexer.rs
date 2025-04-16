@@ -25,12 +25,10 @@ impl<'a> Lexer<'a> {
         while let Some(mut c) = self.current_char {
             match c {
                 ' ' | '\n' | '\t' => self.advance(),
-                '0'..'9' | '.' => {
+                c if c.is_digit(10) || c == '.' => {
                     let mut number = String::new();
                     while let Some(c) = self.current_char {
-                        if c.is_digit(10) {
-                            number.push(c);
-                        } else if c == '.' {
+                        if c.is_digit(10) || c == '.' {
                             number.push(c);
                         } else {
                             break;
