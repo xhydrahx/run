@@ -104,12 +104,18 @@ impl<'a> Lexer<'a> {
                             ident.push(c);
                             self.advance();
                         } else {
-                            return Err("Unknown Symbol".into());
+                            break;
                         }
                     }
 
                     if ident == "log" {
                         tokens.push(Token::Log);
+                    } else if ident == "ln" {
+                        tokens.push(Token::Ln);
+                        if self.current_char == Some('(') {
+                            tokens.push(Token::LeftParen);
+                            self.advance();
+                        }
                     }
                 }
                 ',' => {
@@ -129,7 +135,7 @@ impl<'a> Lexer<'a> {
                     self.advance();
                 }
                 _ => {
-                    return Err("Unknown Symbol".into());
+                    return Err("Unknown symbol".into());
                 }
             }
         }
