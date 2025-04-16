@@ -32,17 +32,18 @@ impl Eval {
     fn expression(&self, node: &Ast) -> f64 {
         match node {
             Ast::Number(value) => value.clone(),
-            Ast::Addition(left, right) => self.arithmetic(left, right, |x, y| x + y),
-            Ast::Subtraction(left, right) => self.arithmetic(left, right, |x, y| x - y),
-            Ast::Multiplication(left, right) => self.arithmetic(left, right, |x, y| x * y),
-            Ast::Division(left, right) => self.arithmetic(left, right, |x, y| x / y),
-            Ast::Exponent(left, right) => self.arithmetic(left, right, |x, y| x.powf(y)),
-            Ast::Root(left, right) => self.arithmetic(left, right, |x, y| x.powf(1.0 / y)),
-            Ast::Log(left, right) => self.arithmetic(left, right, |x, y| y.log(x)),
+            Ast::Addition(left, right) => self.double(left, right, |x, y| x + y),
+            Ast::Subtraction(left, right) => self.double(left, right, |x, y| x - y),
+            Ast::Multiplication(left, right) => self.double(left, right, |x, y| x * y),
+            Ast::Division(left, right) => self.double(left, right, |x, y| x / y),
+            Ast::Exponent(left, right) => self.double(left, right, |x, y| x.powf(y)),
+            Ast::Root(left, right) => self.double(left, right, |x, y| x.powf(1.0 / y)),
+            Ast::Log(left, right) => self.double(left, right, |x, y| y.log(x)),
+            Ast::Ln(node) => self.single(node, |x| x.ln()),
         }
     }
 
-    fn arithmetic<F>(&self, left: &Ast, right: &Ast, operation: F) -> f64
+    fn double<F>(&self, left: &Ast, right: &Ast, operation: F) -> f64
     where
         F: Fn(f64, f64) -> f64,
     {
@@ -56,5 +57,17 @@ impl Eval {
         };
 
         operation(x, y)
+    }
+
+    fn single<F>(&self, node: &Ast, operation: F) -> f64
+    where
+        F: Fn(f64) -> f64,
+    {
+        let x = match node {
+            Ast::Number(value) => value.clone(),
+            _ => self.expression(&node),
+        };
+
+        operation(x)
     }
 }

@@ -11,6 +11,7 @@ pub enum Token {
     Root,
 
     Log,
+    Ln,
 
     LeftParen,
     RightParen,
@@ -35,4 +36,5 @@ pub enum Ast {
     Exponent(Box<Ast>, Box<Ast>),
     Root(Box<Ast>, Box<Ast>),
     Log(Box<Ast>, Box<Ast>),
+    Ln(Box<Ast>),
 }

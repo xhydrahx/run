@@ -121,6 +121,28 @@ impl<'a> Parser<'a> {
                 }
                 _ => Err("Incorrect usage of log function".into()),
             },
+            Token::Ln => match self.tokens.next() {
+                Some(Token::LeftParen) => {
+                    let mut argument = Vec::new();
+                    let mut depth = 1;
+                    while let Some(next_token) = self.tokens.next() {
+                        if next_token == &Token::LeftParen {
+                            depth += 1;
+                        }
+                        if next_token == &Token::RightParen {
+                            depth -= 1;
+                            if depth == 0 {
+                                break;
+                            }
+                        }
+
+                        argument.push(next_token.clone());
+                    }
+
+                    Ok(Ast::Ln(Box::new(Parser::new(&argument).parse()?)))
+                }
+                _ => Err("Incorrect usage of ln function".into()),
+            },
             _ => Err("Unknown function".into()),
         }
     }
