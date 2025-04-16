@@ -213,6 +213,13 @@ impl<'a> Parser<'a> {
     }
 
     fn infix(&mut self, left: Ast, token: &Token) -> Result<Ast, String> {
+        if token.is_unary() {
+            return match token {
+                Token::Factorial => Ok(Ast::Factorial(Box::new(left))),
+                _ => Err("Unexpected unary operator".into()),
+            };
+        }
+
         let precedence = Self::precedence(token);
         let right = self.expression(precedence + 1)?;
 
@@ -231,6 +238,7 @@ impl<'a> Parser<'a> {
             Token::Addition | Token::Subtraction => 1,
             Token::Multiplication | Token::Division => 2,
             Token::Exponent => 3,
+            Token::Factorial => 4,
             _ => 0,
         }
     }

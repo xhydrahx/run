@@ -13,6 +13,8 @@ pub enum Token {
     Log,
     Ln,
 
+    Factorial,
+
     LeftParen,
     RightParen,
 
@@ -22,6 +24,15 @@ pub enum Token {
     E,
     Pi,
     Phi,
+}
+
+impl Token {
+    pub fn is_unary(&self) -> bool {
+        match self {
+            Token::Factorial => true,
+            _ => false,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -37,4 +48,6 @@ pub enum Ast {
     Root(Box<Ast>, Box<Ast>),
     Log(Box<Ast>, Box<Ast>),
     Ln(Box<Ast>),
+
+    Factorial(Box<Ast>),
 }

@@ -121,6 +121,10 @@ impl<'a> Lexer<'a> {
                         }
                     }
                 }
+                '!' => {
+                    tokens.push(Token::Factorial);
+                    self.advance();
+                }
                 ',' => {
                     tokens.push(Token::Comma);
                     self.advance();
