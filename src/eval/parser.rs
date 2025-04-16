@@ -43,6 +43,30 @@ impl<'a> Parser<'a> {
                     Token::Pi => Ok(Ast::Number(consts::PI)),
                     Token::Phi => Ok(Ast::Number((1.0 + 5.0_f64.sqrt()) / 2.0)),
                     Token::LeftParen => Ok(self.paren()?),
+                    Token::Subtraction => match self.tokens.next() {
+                        Some(Token::Number(value)) => Ok(Ast::Number(-value.clone())),
+                        Some(Token::LeftParen) => {
+                            let mut number = Vec::new();
+                            let mut depth = 1;
+                            while let Some(next_token) = self.tokens.next() {
+                                if next_token == &Token::LeftParen {
+                                    depth += 1;
+                                }
+                                if next_token == &Token::RightParen {
+                                    depth -= 1;
+                                    if depth == 0 {
+                                        break;
+                                    }
+                                }
+                                number.push(next_token.clone());
+                            }
+                            Ok(Parser::new(&number).parse()?)
+                        }
+                        Some(Token::E) => Ok(Ast::Number(-consts::E)),
+                        Some(Token::Pi) => Ok(Ast::Number(-consts::PI)),
+                        Some(Token::Phi) => Ok(Ast::Number(-((1.0 + 5.0_f64.sqrt()) / 2.0))),
+                        _ => Err("Unexpected symbol".into()),
+                    },
                     _ => Err("Unexpected symbol".into()),
                 }
             }

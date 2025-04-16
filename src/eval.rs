@@ -41,7 +41,14 @@ impl Eval {
             Ast::Log(left, right) => self.double(left, right, |x, y| y.log(x)),
             Ast::Ln(node) => self.single(node, |x| x.ln()),
             Ast::Factorial(node) => {
-                self.single(node, |x| (1..=x as u64).map(|n| n as f64).product())
+                let fact = |x: u64| (1..=x).fold(1i128, |acc, v| acc * v as i128);
+                self.single(node, |x| {
+                    if x < 0.0 {
+                        (-fact((-x) as u64)) as f64
+                    } else {
+                        fact(x as u64) as f64
+                    }
+                })
             }
         }
     }
