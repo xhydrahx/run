@@ -20,7 +20,14 @@ pub enum Token {
     Csc,
     Sec,
     Cot,
-
+    
+    Arcsin,
+    Arccos,
+    Arctan,
+    Arccsc,
+    Arcsec,
+    Arccot,
+    
     Factorial,
 
     LeftParen,
@@ -65,6 +72,13 @@ pub enum Ast {
     Csc(Box<Ast>),
     Sec(Box<Ast>),
     Cot(Box<Ast>),
+    
+    Arcsin(Box<Ast>),
+    Arccos(Box<Ast>),
+    Arctan(Box<Ast>),
+    Arccsc(Box<Ast>),
+    Arcsec(Box<Ast>),
+    Arccot(Box<Ast>),
 
     Factorial(Box<Ast>),
 }

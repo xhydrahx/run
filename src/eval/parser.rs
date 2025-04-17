@@ -131,7 +131,31 @@ impl<'a> Parser<'a> {
             },
             Token::Cot => match self.tokens.next() {
                 Some(Token::LeftParen) => Ok(Ast::Cot(Box::new(self.paren()?))),
-                _ => Err("Incorrrct usage of cot  function".into()),
+                _ => Err("Incorrrct usage of cotfunction".into()),
+            },
+            Token::Arcsin => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arcsin(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arcsin function".into()),
+            },
+            Token::Arccos => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arccos(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arccos function".into()),
+            },
+            Token::Arctan => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arctan(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arctan function".into()),
+            },
+            Token::Arccsc => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arccsc(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arccsc function".into()),
+            },
+            Token::Arcsec => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arcsec(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arcsec function".into()),
+            },
+            Token::Arccot => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arccot(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arccot function".into()),
             },
             _ => Err("Unknown function".into()),
         }
