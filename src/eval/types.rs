@@ -13,6 +13,10 @@ pub enum Token {
     Log,
     Ln,
 
+    Sin,
+    Cos,
+    Tan,
+
     Factorial,
 
     LeftParen,
@@ -48,6 +52,10 @@ pub enum Ast {
     Root(Box<Ast>, Box<Ast>),
     Log(Box<Ast>, Box<Ast>),
     Ln(Box<Ast>),
+
+    Sin(Box<Ast>),
+    Cos(Box<Ast>),
+    Tan(Box<Ast>),
 
     Factorial(Box<Ast>),
 }
