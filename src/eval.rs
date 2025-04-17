@@ -50,6 +50,9 @@ impl Eval {
                     }
                 })
             }
+            Ast::Sin(node) => self.single(node, |x| x.sin()),
+            Ast::Cos(node) => self.single(node, |x| x.cos()),
+            Ast::Tan(node) => self.single(node, |x| x.tan()),
         }
     }
 
