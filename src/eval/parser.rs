@@ -157,6 +157,54 @@ impl<'a> Parser<'a> {
                 Some(Token::LeftParen) => Ok(Ast::Arccot(Box::new(self.paren()?))),
                 _ => Err("Incorrect usage of arccot function".into()),
             },
+            Token::Sinh => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Sinh(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of sinh function".into()),
+            },
+            Token::Cosh => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Cosh(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of cosh function".into()),
+            },
+            Token::Tanh => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Tanh(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of tanh function".into()),
+            },
+            Token::Coth => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Coth(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of coth function".into()),
+            },
+            Token::Sech => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Sech(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of sech function".into()),
+            },
+            Token::Csch => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Csch(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of csch function".into()),
+            },
+            Token::Arcsinh => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arcsinh(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arcsinh function".into()),
+            },
+            Token::Arccosh => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arccosh(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arccosh function".into()),
+            },
+            Token::Arctanh => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arctanh(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arctanh function".into()),
+            },
+            Token::Arccoth => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arccoth(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arccoth function".into()),
+            },
+            Token::Arcsech => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arcsech(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arcsech function".into()),
+            },
+            Token::Arccsch => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Arccsch(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of arccsch function".into()),
+            },
             _ => Err("Unknown function".into()),
         }
     }

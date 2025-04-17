@@ -101,7 +101,7 @@ impl<'a> Lexer<'a> {
                     }
                 }
                 's' => {
-                    if let Some(keyword) = self.check_for(&["sin", "sec", "sqrt"]) {
+                    if let Some(keyword) = self.check_for(&["sin", "sec", "sinh", "sech", "sqrt"]) {
                         match keyword.as_str() {
                             "sin" => {
                                 tokens.push(Token::Sin);
@@ -117,6 +117,8 @@ impl<'a> Lexer<'a> {
                                     self.advance();
                                 }
                             }
+                            "sinh" => tokens.push(Token::Sinh),
+                            "sech" => tokens.push(Token::Sech),
                             "sqrt" => tokens.push(Token::Sqrt),
                             _ => unreachable!(),
                         }
@@ -125,11 +127,34 @@ impl<'a> Lexer<'a> {
                     }
                 }
                 'c' => {
-                    if let Some(keyword) = self.check_for(&["cos", "csc"]) {
+                    if let Some(keyword) =
+                        self.check_for(&["cos", "csc", "cot", "cosh", "csch", "coth"])
+                    {
                         match keyword.as_str() {
-                            "cos" => tokens.push(Token::Cos),
-                            "csc" => tokens.push(Token::Csc),
-                            "cot" => tokens.push(Token::Cot),
+                            "cos" => {
+                                tokens.push(Token::Cos);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "csc" => {
+                                tokens.push(Token::Csc);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "cot" => {
+                                tokens.push(Token::Cot);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "cosh" => tokens.push(Token::Cosh),
+                            "csch" => tokens.push(Token::Csch),
+                            "coth" => tokens.push(Token::Coth),
                             _ => unreachable!(),
                         }
                     } else {
@@ -137,25 +162,78 @@ impl<'a> Lexer<'a> {
                     }
                 }
                 't' => {
-                    if self.check_for(&["tan"]).is_some() {
-                        tokens.push(Token::Tan);
+                    if let Some(keyword) = self.check_for(&["tan", "tanh"]) {
+                        match keyword.as_str() {
+                            "tan" => {
+                                tokens.push(Token::Tan);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "tanh" => tokens.push(Token::Tanh),
+                            _ => unreachable!(),
+                        }
                     } else {
                         return Err("Unknown identifier starting with 't'".into());
                     }
                 }
                 'a' => {
-                    if let Some(keyword) =
-                        self.check_for(&["asin", "acos", "atan", "acsc", "asec", "acot"])
-                    {
-                        tokens.push(match keyword.as_str() {
-                            "asin" => Token::Arcsin,
-                            "acos" => Token::Arccos,
-                            "atan" => Token::Arctan,
-                            "acsc" => Token::Arccsc,
-                            "asec" => Token::Arcsec,
-                            "acot" => Token::Arccot,
+                    if let Some(keyword) = self.check_for(&[
+                        "asin", "acos", "atan", "acsc", "asec", "acot", "asinh", "acosh", "atanh",
+                        "acsch", "asech", "acoth",
+                    ]) {
+                        match keyword.as_str() {
+                            "asin" => {
+                                tokens.push(Token::Arcsin);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "acos" => {
+                                tokens.push(Token::Arccos);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "atan" => {
+                                tokens.push(Token::Arctan);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "acot" => {
+                                tokens.push(Token::Arccot);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "asec" => {
+                                tokens.push(Token::Arcsec);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "acsc" => {
+                                tokens.push(Token::Arccsc);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "asinh" => tokens.push(Token::Arcsinh),
+                            "acosh" => tokens.push(Token::Arccosh),
+                            "atanh" => tokens.push(Token::Arctanh),
+                            "acoth" => tokens.push(Token::Arccoth),
+                            "asech" => tokens.push(Token::Arcsech),
+                            "acsch" => tokens.push(Token::Arccsch),
                             _ => unreachable!(),
-                        });
+                        }
                     } else {
                         return Err("Unknown identifier starting with 'a'".into());
                     }
