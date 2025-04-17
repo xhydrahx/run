@@ -17,6 +17,9 @@ pub enum Token {
     Sin,
     Cos,
     Tan,
+    Csc,
+    Sec,
+    Cot,
 
     Factorial,
 
@@ -59,6 +62,9 @@ pub enum Ast {
     Sin(Box<Ast>),
     Cos(Box<Ast>),
     Tan(Box<Ast>),
+    Csc(Box<Ast>),
+    Sec(Box<Ast>),
+    Cot(Box<Ast>),
 
     Factorial(Box<Ast>),
 }

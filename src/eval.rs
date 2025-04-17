@@ -54,6 +54,9 @@ impl Eval {
             Ast::Sin(node) => self.single(node, |x| x.sin()),
             Ast::Cos(node) => self.single(node, |x| x.cos()),
             Ast::Tan(node) => self.single(node, |x| x.tan()),
+            Ast::Csc(node) => self.single(node, |x| 1.0 / x.sin()),
+            Ast::Sec(node) => self.single(node, |x| 1.0 / x.cos()),
+            Ast::Cot(node) => self.single(node, |x| 1.0 / x.tan())
         }
     }
 
