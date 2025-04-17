@@ -121,6 +121,18 @@ impl<'a> Parser<'a> {
                 Some(Token::LeftParen) => Ok(Ast::Tan(Box::new(self.paren()?))),
                 _ => Err("Incorrect usage of tan function".into()),
             },
+            Token::Csc => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Csc(Box::new(self.paren()?))),
+                _ => Err("Incorrrct usage of csc function".into()),
+            },
+            Token::Sec => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Sec(Box::new(self.paren()?))),
+                _ => Err("Incorrrct usage of sec function".into()),
+            },
+            Token::Cot => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Cot(Box::new(self.paren()?))),
+                _ => Err("Incorrrct usage of cot  function".into()),
+            },
             _ => Err("Unknown function".into()),
         }
     }

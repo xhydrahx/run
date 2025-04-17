@@ -101,10 +101,17 @@ impl<'a> Lexer<'a> {
                     }
                 }
                 's' => {
-                    if let Some(keyword) = self.check_for(&["sin", "sqrt"]) {
+                    if let Some(keyword) = self.check_for(&["sin", "sec", "sqrt"]) {
                         match keyword.as_str() {
                             "sin" => {
                                 tokens.push(Token::Sin);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "sec" => {
+                                tokens.push(Token::Sec);
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
@@ -118,8 +125,13 @@ impl<'a> Lexer<'a> {
                     }
                 }
                 'c' => {
-                    if self.check_for(&["cos"]).is_some() {
-                        tokens.push(Token::Cos);
+                    if let Some(keyword) = self.check_for(&["cos", "csc"]) {
+                        match keyword.as_str() {
+                            "cos" => tokens.push(Token::Cos),
+                            "csc" => tokens.push(Token::Csc),
+                            "cot" => tokens.push(Token::Cot),
+                            _ => unreachable!(),
+                        }
                     } else {
                         return Err("Unknown identifier starting with 'c'".into());
                     }
