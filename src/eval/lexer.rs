@@ -101,10 +101,20 @@ impl<'a> Lexer<'a> {
                     }
                 }
                 's' => {
-                    if self.check_for(&["sin"]).is_some() {
-                        tokens.push(Token::Sin);
+                    if let Some(keyword) = self.check_for(&["sin", "sqrt"]) {
+                        match keyword.as_str() {
+                            "sin" => {
+                                tokens.push(Token::Sin);
+                                if self.current_char == Some('(') {
+                                    tokens.push(Token::LeftParen);
+                                    self.advance();
+                                }
+                            }
+                            "sqrt" => tokens.push(Token::Sqrt),
+                            _ => unreachable!(),
+                        }
                     } else {
-                        return Err("Unknown identifier starting with 's'".into());
+                        return Err("Unknown identifier starting with 'l'".into());
                     }
                 }
                 'c' => {
