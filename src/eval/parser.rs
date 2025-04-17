@@ -79,6 +79,10 @@ impl<'a> Parser<'a> {
                 }
                 _ => Err("Incorrect isage of root function".into()),
             },
+            Token::Sqrt => match self.tokens.next() {
+                Some(Token::LeftParen) => Ok(Ast::Sqrt(Box::new(self.paren()?))),
+                _ => Err("Incorrect usage of sqrt function".into()),
+            },
             Token::Log => match self.tokens.next() {
                 Some(Token::Underscore) => {
                     let mut base = Vec::new();

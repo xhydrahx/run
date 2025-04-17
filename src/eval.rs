@@ -38,6 +38,7 @@ impl Eval {
             Ast::Division(left, right) => self.double(left, right, |x, y| x / y),
             Ast::Exponent(left, right) => self.double(left, right, |x, y| x.powf(y)),
             Ast::Root(left, right) => self.double(left, right, |x, y| x.powf(1.0 / y)),
+            Ast::Sqrt(node) => self.single(node, |x| x.sqrt()),
             Ast::Log(left, right) => self.double(left, right, |x, y| y.log(x)),
             Ast::Ln(node) => self.single(node, |x| x.ln()),
             Ast::Factorial(node) => {
