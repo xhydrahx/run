@@ -62,18 +62,7 @@ impl<'a> Lexer<'a> {
                     self.advance();
                 }
                 'r' => {
-                    let mut ident = String::new();
-                    for _i in 0..4 {
-                        c = self.current_char.unwrap();
-                        if c.is_alphabetic() {
-                            ident.push(c);
-                            self.advance();
-                        } else {
-                            return Err("Unknown Symbol".into());
-                        }
-                    }
-
-                    if ident == "root" {
+                    if self.check_for("root") {
                         tokens.push(Token::Root);
                     }
                 }
@@ -120,59 +109,17 @@ impl<'a> Lexer<'a> {
                     }
                 }
                 's' => {
-                    let mut ident = String::new();
-                    for _i in 0..3 {
-                        if self.current_char.is_none() {
-                            break;
-                        }
-                        c = self.current_char.unwrap();
-                        if c.is_alphabetic() {
-                            ident.push(c);
-                            self.advance();
-                        } else {
-                            break;
-                        }
-                    }
-
-                    if ident == "sin" {
+                    if self.check_for("sin") {
                         tokens.push(Token::Sin);
                     }
                 }
                 'c' => {
-                    let mut ident = String::new();
-                    for _i in 0..3 {
-                        if self.current_char.is_none() {
-                            break;
-                        }
-                        c = self.current_char.unwrap();
-                        if c.is_alphabetic() {
-                            ident.push(c);
-                            self.advance();
-                        } else {
-                            break;
-                        }
-                    }
-
-                    if ident == "cos" {
+                    if self.check_for("cos") {
                         tokens.push(Token::Cos);
                     }
                 }
                 't' => {
-                    let mut ident = String::new();
-                    for _i in 0..3 {
-                        if self.current_char.is_none() {
-                            break;
-                        }
-                        c = self.current_char.unwrap();
-                        if c.is_alphabetic() {
-                            ident.push(c);
-                            self.advance();
-                        } else {
-                            break;
-                        }
-                    }
-
-                    if ident == "tan" {
+                    if self.check_for("tan") {
                         tokens.push(Token::Tan);
                     }
                 }
@@ -202,5 +149,24 @@ impl<'a> Lexer<'a> {
             }
         }
         Ok(tokens)
+    }
+
+    fn check_for(&mut self, name: &str) -> bool {
+        let mut c;
+        let mut ident = String::new();
+        for _i in 0..name.len() {
+            if self.current_char.is_none() {
+                break;
+            }
+            c = self.current_char.unwrap();
+            if c.is_alphabetic() {
+                ident.push(c);
+                self.advance();
+            } else {
+                break;
+            }
+        }
+
+        return ident == name;
     }
 }
