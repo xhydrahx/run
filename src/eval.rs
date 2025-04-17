@@ -63,6 +63,18 @@ impl Eval {
             Ast::Arccsc(node) => self.single(node, |x| (1.0 / x.sin()).asin()),
             Ast::Arcsec(node) => self.single(node, |x| (1.0 / x.cos()).acos()),
             Ast::Arccot(node) => self.single(node, |x| (1.0 / x.tan()).atan()),
+            Ast::Sinh(node) => self.single(node, |x| x.sinh()),
+            Ast::Cosh(node) => self.single(node, |x| x.cosh()),
+            Ast::Tanh(node) => self.single(node, |x| x.tanh()),
+            Ast::Coth(node) => self.single(node, |x| 1.0 / x.tanh()),
+            Ast::Sech(node) => self.single(node, |x| 1.0 / x.cosh()),
+            Ast::Csch(node) => self.single(node, |x| 1.0 / x.sinh()),
+            Ast::Arcsinh(node) => self.single(node, |x| x.asinh()),
+            Ast::Arccosh(node) => self.single(node, |x| x.acosh()),
+            Ast::Arctanh(node) => self.single(node, |x| x.atanh()),
+            Ast::Arccoth(node) => self.single(node, |x| 0.5 * ((x + 1.0) / (x - 1.0)).ln()),
+            Ast::Arcsech(node) => self.single(node, |x| (1.0 / x).acosh()),
+            Ast::Arccsch(node) => self.single(node, |x| (1.0 / x).asinh()),
         }
     }
 
