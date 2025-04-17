@@ -56,7 +56,13 @@ impl Eval {
             Ast::Tan(node) => self.single(node, |x| x.tan()),
             Ast::Csc(node) => self.single(node, |x| 1.0 / x.sin()),
             Ast::Sec(node) => self.single(node, |x| 1.0 / x.cos()),
-            Ast::Cot(node) => self.single(node, |x| 1.0 / x.tan())
+            Ast::Cot(node) => self.single(node, |x| 1.0 / x.tan()),
+            Ast::Arcsin(node) => self.single(node, |x| x.asin()),
+            Ast::Arccos(node) => self.single(node, |x| x.acos()),
+            Ast::Arctan(node) => self.single(node, |x| x.atan()),
+            Ast::Arccsc(node) => self.single(node, |x| (1.0 / x.sin()).asin()),
+            Ast::Arcsec(node) => self.single(node, |x| (1.0 / x.cos()).acos()),
+            Ast::Arccot(node) => self.single(node, |x| (1.0 / x.tan()).atan()),
         }
     }
 

@@ -143,6 +143,23 @@ impl<'a> Lexer<'a> {
                         return Err("Unknown identifier starting with 't'".into());
                     }
                 }
+                'a' => {
+                    if let Some(keyword) =
+                        self.check_for(&["asin", "acos", "atan", "acsc", "asec", "acot"])
+                    {
+                        tokens.push(match keyword.as_str() {
+                            "asin" => Token::Arcsin,
+                            "acos" => Token::Arccos,
+                            "atan" => Token::Arctan,
+                            "acsc" => Token::Arccsc,
+                            "asec" => Token::Arcsec,
+                            "acot" => Token::Arccot,
+                            _ => unreachable!(),
+                        });
+                    } else {
+                        return Err("Unknown identifier starting with 'a'".into());
+                    }
+                }
                 '!' => {
                     tokens.push(Token::Factorial);
                     self.advance();
