@@ -9,6 +9,7 @@ pub enum Token {
 
     Exponent,
     Root,
+    Sqrt,
 
     Log,
     Ln,
@@ -50,6 +51,8 @@ pub enum Ast {
 
     Exponent(Box<Ast>, Box<Ast>),
     Root(Box<Ast>, Box<Ast>),
+    Sqrt(Box<Ast>),
+
     Log(Box<Ast>, Box<Ast>),
     Ln(Box<Ast>),
 

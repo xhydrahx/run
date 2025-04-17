@@ -109,8 +109,28 @@ impl<'a> Lexer<'a> {
                     }
                 }
                 's' => {
-                    if self.check_for("sin") {
+                    let mut ident = String::new();
+                    for _i in 0..4 {
+                        if self.current_char.is_none() {
+                            break;
+                        }
+                        c = self.current_char.unwrap();
+                        if c.is_alphabetic() {
+                            ident.push(c);
+                            self.advance();
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if ident == "sqrt" {
+                        tokens.push(Token::Sqrt);
+                    } else if ident == "sin" {
                         tokens.push(Token::Sin);
+                        if self.current_char == Some('(') {
+                            tokens.push(Token::LeftParen);
+                            self.advance();
+                        }
                     }
                 }
                 'c' => {
