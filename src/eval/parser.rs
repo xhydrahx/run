@@ -45,23 +45,7 @@ impl<'a> Parser<'a> {
                     Token::LeftParen => Ok(self.paren()?),
                     Token::Subtraction => match self.tokens.next() {
                         Some(Token::Number(value)) => Ok(Ast::Number(-value.clone())),
-                        Some(Token::LeftParen) => {
-                            let mut number = Vec::new();
-                            let mut depth = 1;
-                            while let Some(next_token) = self.tokens.next() {
-                                if next_token == &Token::LeftParen {
-                                    depth += 1;
-                                }
-                                if next_token == &Token::RightParen {
-                                    depth -= 1;
-                                    if depth == 0 {
-                                        break;
-                                    }
-                                }
-                                number.push(next_token.clone());
-                            }
-                            Ok(Parser::new(&number).parse()?)
-                        }
+                        Some(Token::LeftParen) => Ok(self.paren()?),
                         Some(Token::E) => Ok(Ast::Number(-consts::E)),
                         Some(Token::Pi) => Ok(Ast::Number(-consts::PI)),
                         Some(Token::Phi) => Ok(Ast::Number(-((1.0 + 5.0_f64.sqrt()) / 2.0))),
@@ -80,22 +64,7 @@ impl<'a> Parser<'a> {
             Token::Root => match self.tokens.next() {
                 Some(Token::LeftParen) => {
                     let mut radicand = Vec::new();
-                    let mut depth = 1;
                     while let Some(next_token) = self.tokens.next() {
-                        if next_token == &Token::LeftParen {
-                            depth += 1;
-                        }
-
-                        if next_token == &Token::RightParen {
-                            depth -= 1;
-                            if depth == 0 {
-                                return Ok(Ast::Root(
-                                    Box::new(Parser::new(&radicand).parse()?),
-                                    Box::new(Ast::Number(2.0)),
-                                ));
-                            }
-                        }
-
                         if next_token == &Token::Comma {
                             break;
                         }
@@ -103,25 +72,9 @@ impl<'a> Parser<'a> {
                         radicand.push(next_token.clone());
                     }
 
-                    let mut index = Vec::new();
-                    let mut depth = 1;
-                    while let Some(next_token) = self.tokens.next() {
-                        if next_token == &Token::LeftParen {
-                            depth += 1;
-                        }
-                        if next_token == &Token::RightParen {
-                            depth -= 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
-
-                        index.push(next_token.clone());
-                    }
-
                     Ok(Ast::Root(
                         Box::new(Parser::new(&radicand).parse()?),
-                        Box::new(Parser::new(&index).parse()?),
+                        Box::new(self.paren()?),
                     ))
                 }
                 _ => Err("Incorrect isage of root function".into()),
@@ -137,137 +90,31 @@ impl<'a> Parser<'a> {
                         base.push(next_token.clone());
                     }
 
-                    let mut argument = Vec::new();
-                    let mut depth = 1;
-                    while let Some(next_token) = self.tokens.next() {
-                        if next_token == &Token::LeftParen {
-                            depth += 1;
-                        }
-                        if next_token == &Token::RightParen {
-                            depth -= 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
-
-                        argument.push(next_token.clone());
-                    }
-
                     Ok(Ast::Log(
                         Box::new(Parser::new(&base).parse()?),
-                        Box::new(Parser::new(&argument).parse()?),
+                        Box::new(self.paren()?),
                     ))
                 }
-                Some(Token::LeftParen) => {
-                    let mut argument = Vec::new();
-                    let mut depth = 1;
-                    while let Some(next_token) = self.tokens.next() {
-                        if next_token == &Token::LeftParen {
-                            depth += 1;
-                        }
-                        if next_token == &Token::RightParen {
-                            depth -= 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
-
-                        argument.push(next_token.clone());
-                    }
-
-                    Ok(Ast::Log(
-                        Box::new(Ast::Number(10.0)),
-                        Box::new(Parser::new(&argument).parse()?),
-                    ))
-                }
+                Some(Token::LeftParen) => Ok(Ast::Log(
+                    Box::new(Ast::Number(10.0)),
+                    Box::new(self.paren()?),
+                )),
                 _ => Err("Incorrect usage of log function".into()),
             },
             Token::Ln => match self.tokens.next() {
-                Some(Token::LeftParen) => {
-                    let mut argument = Vec::new();
-                    let mut depth = 1;
-                    while let Some(next_token) = self.tokens.next() {
-                        if next_token == &Token::LeftParen {
-                            depth += 1;
-                        }
-                        if next_token == &Token::RightParen {
-                            depth -= 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
-
-                        argument.push(next_token.clone());
-                    }
-
-                    Ok(Ast::Ln(Box::new(Parser::new(&argument).parse()?)))
-                }
+                Some(Token::LeftParen) => Ok(Ast::Ln(Box::new(self.paren()?))),
                 _ => Err("Incorrect usage of ln function".into()),
             },
             Token::Sin => match self.tokens.next() {
-                Some(Token::LeftParen) => {
-                    let mut argument = Vec::new();
-                    let mut depth = 1;
-                    while let Some(next_token) = self.tokens.next() {
-                        if next_token == &Token::LeftParen {
-                            depth += 1;
-                        }
-                        if next_token == &Token::RightParen {
-                            depth -= 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
-
-                        argument.push(next_token.clone());
-                    }
-
-                    Ok(Ast::Sin(Box::new(Parser::new(&argument).parse()?)))
-                }
+                Some(Token::LeftParen) => Ok(Ast::Sin(Box::new(self.paren()?))),
                 _ => Err("Incorrect usage of sin function".into()),
             },
             Token::Cos => match self.tokens.next() {
-                Some(Token::LeftParen) => {
-                    let mut argument = Vec::new();
-                    let mut depth = 1;
-                    while let Some(next_token) = self.tokens.next() {
-                        if next_token == &Token::LeftParen {
-                            depth += 1;
-                        }
-                        if next_token == &Token::RightParen {
-                            depth -= 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
-
-                        argument.push(next_token.clone());
-                    }
-
-                    Ok(Ast::Cos(Box::new(Parser::new(&argument).parse()?)))
-                }
+                Some(Token::LeftParen) => Ok(Ast::Cos(Box::new(self.paren()?))),
                 _ => Err("Incorrect usage of cos function".into()),
             },
             Token::Tan => match self.tokens.next() {
-                Some(Token::LeftParen) => {
-                    let mut argument = Vec::new();
-                    let mut depth = 1;
-                    while let Some(next_token) = self.tokens.next() {
-                        if next_token == &Token::LeftParen {
-                            depth += 1;
-                        }
-                        if next_token == &Token::RightParen {
-                            depth -= 1;
-                            if depth == 0 {
-                                break;
-                            }
-                        }
-
-                        argument.push(next_token.clone());
-                    }
-
-                    Ok(Ast::Tan(Box::new(Parser::new(&argument).parse()?)))
-                }
+                Some(Token::LeftParen) => Ok(Ast::Tan(Box::new(self.paren()?))),
                 _ => Err("Incorrect usage of tan function".into()),
             },
             _ => Err("Unknown function".into()),
