@@ -1,6 +1,6 @@
 [package]
 name = "run"
-version = "0.2.04"
+version = "0.2.4"
 edition = "2024"
 
 [dependencies]
