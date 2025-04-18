@@ -1,4 +1,4 @@
-use super::types::Token;
+use super::types::{Token, TrigType};
 use std::str::Chars;
 
 pub struct Lexer<'a> {
@@ -104,21 +104,21 @@ impl<'a> Lexer<'a> {
                     if let Some(keyword) = self.check_for(&["sin", "sec", "sinh", "sech", "sqrt"]) {
                         match keyword.as_str() {
                             "sin" => {
-                                tokens.push(Token::Sin);
+                                tokens.push(Token::Trig(TrigType::Sin));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
                             "sec" => {
-                                tokens.push(Token::Sec);
+                                tokens.push(Token::Trig(TrigType::Sec));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
-                            "sinh" => tokens.push(Token::Sinh),
-                            "sech" => tokens.push(Token::Sech),
+                            "sinh" => tokens.push(Token::Trig(TrigType::Sinh)),
+                            "sech" => tokens.push(Token::Trig(TrigType::Sech)),
                             "sqrt" => tokens.push(Token::Sqrt),
                             _ => unreachable!(),
                         }
@@ -132,29 +132,29 @@ impl<'a> Lexer<'a> {
                     {
                         match keyword.as_str() {
                             "cos" => {
-                                tokens.push(Token::Cos);
+                                tokens.push(Token::Trig(TrigType::Cos));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
                             "csc" => {
-                                tokens.push(Token::Csc);
+                                tokens.push(Token::Trig(TrigType::Csc));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
                             "cot" => {
-                                tokens.push(Token::Cot);
+                                tokens.push(Token::Trig(TrigType::Cot));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
-                            "cosh" => tokens.push(Token::Cosh),
-                            "csch" => tokens.push(Token::Csch),
-                            "coth" => tokens.push(Token::Coth),
+                            "cosh" => tokens.push(Token::Trig(TrigType::Cosh)),
+                            "csch" => tokens.push(Token::Trig(TrigType::Csch)),
+                            "coth" => tokens.push(Token::Trig(TrigType::Coth)),
                             _ => unreachable!(),
                         }
                     } else {
@@ -165,13 +165,13 @@ impl<'a> Lexer<'a> {
                     if let Some(keyword) = self.check_for(&["tan", "tanh"]) {
                         match keyword.as_str() {
                             "tan" => {
-                                tokens.push(Token::Tan);
+                                tokens.push(Token::Trig(TrigType::Tan));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
-                            "tanh" => tokens.push(Token::Tanh),
+                            "tanh" => tokens.push(Token::Trig(TrigType::Tanh)),
                             _ => unreachable!(),
                         }
                     } else {
@@ -185,53 +185,53 @@ impl<'a> Lexer<'a> {
                     ]) {
                         match keyword.as_str() {
                             "asin" => {
-                                tokens.push(Token::Arcsin);
+                                tokens.push(Token::Trig(TrigType::Arcsin));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
                             "acos" => {
-                                tokens.push(Token::Arccos);
+                                tokens.push(Token::Trig(TrigType::Arccos));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
                             "atan" => {
-                                tokens.push(Token::Arctan);
+                                tokens.push(Token::Trig(TrigType::Arctan));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
                             "acot" => {
-                                tokens.push(Token::Arccot);
+                                tokens.push(Token::Trig(TrigType::Arccot));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
                             "asec" => {
-                                tokens.push(Token::Arcsec);
+                                tokens.push(Token::Trig(TrigType::Arcsec));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
                             "acsc" => {
-                                tokens.push(Token::Arccsc);
+                                tokens.push(Token::Trig(TrigType::Arccsc));
                                 if self.current_char == Some('(') {
                                     tokens.push(Token::LeftParen);
                                     self.advance();
                                 }
                             }
-                            "asinh" => tokens.push(Token::Arcsinh),
-                            "acosh" => tokens.push(Token::Arccosh),
-                            "atanh" => tokens.push(Token::Arctanh),
-                            "acoth" => tokens.push(Token::Arccoth),
-                            "asech" => tokens.push(Token::Arcsech),
-                            "acsch" => tokens.push(Token::Arccsch),
+                            "asinh" => tokens.push(Token::Trig(TrigType::Arcsinh)),
+                            "acosh" => tokens.push(Token::Trig(TrigType::Arccosh)),
+                            "atanh" => tokens.push(Token::Trig(TrigType::Arctanh)),
+                            "acoth" => tokens.push(Token::Trig(TrigType::Arccoth)),
+                            "asech" => tokens.push(Token::Trig(TrigType::Arcsech)),
+                            "acsch" => tokens.push(Token::Trig(TrigType::Arccsch)),
                             _ => unreachable!(),
                         }
                     } else {

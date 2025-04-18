@@ -1,4 +1,4 @@
-use super::eval::types::Ast;
+use super::eval::types::{Ast, TrigType};
 use lexer::Lexer;
 use parser::Parser;
 
@@ -51,30 +51,36 @@ impl Eval {
                     }
                 })
             }
-            Ast::Sin(node) => self.single(node, |x| x.sin()),
-            Ast::Cos(node) => self.single(node, |x| x.cos()),
-            Ast::Tan(node) => self.single(node, |x| x.tan()),
-            Ast::Csc(node) => self.single(node, |x| 1.0 / x.sin()),
-            Ast::Sec(node) => self.single(node, |x| 1.0 / x.cos()),
-            Ast::Cot(node) => self.single(node, |x| 1.0 / x.tan()),
-            Ast::Arcsin(node) => self.single(node, |x| x.asin()),
-            Ast::Arccos(node) => self.single(node, |x| x.acos()),
-            Ast::Arctan(node) => self.single(node, |x| x.atan()),
-            Ast::Arccsc(node) => self.single(node, |x| (1.0 / x.sin()).asin()),
-            Ast::Arcsec(node) => self.single(node, |x| (1.0 / x.cos()).acos()),
-            Ast::Arccot(node) => self.single(node, |x| (1.0 / x.tan()).atan()),
-            Ast::Sinh(node) => self.single(node, |x| x.sinh()),
-            Ast::Cosh(node) => self.single(node, |x| x.cosh()),
-            Ast::Tanh(node) => self.single(node, |x| x.tanh()),
-            Ast::Coth(node) => self.single(node, |x| 1.0 / x.tanh()),
-            Ast::Sech(node) => self.single(node, |x| 1.0 / x.cosh()),
-            Ast::Csch(node) => self.single(node, |x| 1.0 / x.sinh()),
-            Ast::Arcsinh(node) => self.single(node, |x| x.asinh()),
-            Ast::Arccosh(node) => self.single(node, |x| x.acosh()),
-            Ast::Arctanh(node) => self.single(node, |x| x.atanh()),
-            Ast::Arccoth(node) => self.single(node, |x| 0.5 * ((x + 1.0) / (x - 1.0)).ln()),
-            Ast::Arcsech(node) => self.single(node, |x| (1.0 / x).acosh()),
-            Ast::Arccsch(node) => self.single(node, |x| (1.0 / x).asinh()),
+            Ast::Trig(trig_type, node) => self.trig(trig_type.clone(), node),
+        }
+    }
+
+    fn trig(&self, trig_type: TrigType, node: &Ast) -> f64 {
+        match trig_type {
+            TrigType::Sin => self.single(node, |x| x.sin()),
+            TrigType::Cos => self.single(node, |x| x.cos()),
+            TrigType::Tan => self.single(node, |x| x.tan()),
+            TrigType::Csc => self.single(node, |x| 1.0 / x.sin()),
+            TrigType::Sec => self.single(node, |x| 1.0 / x.cos()),
+            TrigType::Cot => self.single(node, |x| 1.0 / x.tan()),
+            TrigType::Arcsin => self.single(node, |x| x.asin()),
+            TrigType::Arccos => self.single(node, |x| x.acos()),
+            TrigType::Arctan => self.single(node, |x| x.atan()),
+            TrigType::Arccsc => self.single(node, |x| (1.0 / x.sin()).asin()),
+            TrigType::Arcsec => self.single(node, |x| (1.0 / x.cos()).acos()),
+            TrigType::Arccot => self.single(node, |x| (1.0 / x.tan()).atan()),
+            TrigType::Sinh => self.single(node, |x| x.sinh()),
+            TrigType::Cosh => self.single(node, |x| x.cosh()),
+            TrigType::Tanh => self.single(node, |x| x.tanh()),
+            TrigType::Coth => self.single(node, |x| 1.0 / x.tanh()),
+            TrigType::Sech => self.single(node, |x| 1.0 / x.cosh()),
+            TrigType::Csch => self.single(node, |x| 1.0 / x.sinh()),
+            TrigType::Arcsinh => self.single(node, |x| x.asinh()),
+            TrigType::Arccosh => self.single(node, |x| x.acosh()),
+            TrigType::Arctanh => self.single(node, |x| x.atanh()),
+            TrigType::Arccoth => self.single(node, |x| 0.5 * ((x + 1.0) / (x - 1.0)).ln()),
+            TrigType::Arcsech => self.single(node, |x| (1.0 / x).acosh()),
+            TrigType::Arccsch => self.single(node, |x| (1.0 / x).asinh()),
         }
     }
 
