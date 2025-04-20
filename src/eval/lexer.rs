@@ -58,6 +58,14 @@ impl<'a> Lexer<'a> {
                     tokens.push(Token::Carrot);
                     self.advance();
                 }
+                '(' => {
+                    tokens.push(Token::LeftParen);
+                    self.advance();
+                }
+                ')' => {
+                    tokens.push(Token::RightParen);
+                    self.advance();
+                }
                 ' ' | '\t' | '\n' => self.advance(),
                 _ => {
                     return Err(format!("Unknown symbol '{}'", c));
