@@ -1,5 +1,5 @@
-use std::io::{Write, stdin, stdout};
 use crate::engine;
+use std::io::{Write, stdin, stdout};
 
 pub fn run() {
     let mut input = String::new();

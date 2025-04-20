@@ -31,11 +31,23 @@ impl<'a> Parser<'a> {
 
     fn prefix(&mut self) -> Result<Expr, String> {
         match self.tokens.next() {
-            Some(Token::Num(n)) => Ok(Expr::Num(*n)),
+            Some(Token::Num(n)) => match self.tokens.peek() {
+                Some(Token::LeftParen) => {
+                    self.tokens.next();
+                    Ok(Expr::Binary(Box::new(Expr::Num(*n)), Operator::Multiplication, Box::new(self.paren()?)))
+                }
+                _ => Ok(Expr::Num(*n))
+            }
             Some(Token::LeftParen) => Ok(self.paren()?),
             Some(Token::Minus) => match self.tokens.next() {
                 Some(Token::Num(n)) => {
-                    Ok(Expr::Unary(Operator::Subtraction, Box::new(Expr::Num(*n))))
+                   match self.tokens.peek() {
+                       Some(Token::LeftParen) => {
+                           self.tokens.next();
+                           Ok(Expr::Binary(Box::new(Expr::Num(-*n)), Operator::Multiplication, Box::new(self.paren()?)))
+                       }
+                   _ => Ok(Expr::Unary(Operator::Subtraction, Box::new(Expr::Num(*n))))
+                   }
                 }
                 Some(Token::LeftParen) => {
                     Ok(Expr::Unary(Operator::Subtraction, Box::new(self.paren()?)))
