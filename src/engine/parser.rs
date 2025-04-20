@@ -73,7 +73,10 @@ impl<'a> Parser<'a> {
         }
 
         if depth != 0 {
-            return Err(format!("Unclosed parenthesis: {} unmatched '('. Expected {} closing ')' before end of expression.", depth, depth));
+            return Err(format!(
+                "Unclosed parenthesis: {} unmatched '('. Expected {} closing ')' before end of expression.",
+                depth, depth
+            ));
         }
 
         Parser::new(tokens.as_slice()).parse()
@@ -122,9 +125,22 @@ impl<'a> Parser<'a> {
                     Box::new(right),
                 ))
             }
+            Token::Exclamation => {
+                let mut amount: i8 = 1;
+                while let Some(token) = self.tokens.peek() {
+                    match token {
+                        Token::Exclamation => {
+                            self.tokens.next();
+                            amount += 1;
+                        }
+                        _ => break,
+                    }
+                }
+
+                Ok(Expr::Unary(Operator::Factorial(amount), Box::new(left)))
+            }
             token => Err(format!(
-                "Unknown binary operator '{}':
-                    Expected one of: '+', '-', '*', '/', '%', etc.",
+                "Unknown operator '{}': Expected one of: '+', '-', '*', '/', '^', etc.",
                 token
             )),
         }

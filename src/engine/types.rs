@@ -8,6 +8,7 @@ pub enum Token {
     Carrot,
     LeftParen,
     RightParen,
+    Exclamation,
 }
 
 impl Token {
@@ -16,6 +17,7 @@ impl Token {
             Token::Plus | Token::Minus => 1,
             Token::Star | Token::Slash => 2,
             Token::Carrot => 3,
+            Token::Exclamation => 4,
             _ => 0
         }
     }
@@ -32,6 +34,7 @@ impl std::fmt::Display for Token {
             Token::Carrot => "^",
             Token::LeftParen => "(",
             Token::RightParen => ")",
+            Token::Exclamation => "!",
         };
         write!(f, "{}", s)
     }
@@ -51,4 +54,5 @@ pub enum Operator {
     Multiplication,
     Division,
     Exponent,
+    Factorial(i8),
 }
