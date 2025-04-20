@@ -1,4 +1,5 @@
 use std::io::{Write, stdin, stdout};
+use crate::eval;
 
 pub fn run() {
     let mut input = String::new();
@@ -11,8 +12,7 @@ pub fn run() {
         stdin()
             .read_line(&mut input)
             .expect("Did not enter a string");
-        input = input.trim().to_string();
 
-        println!("=> {}", input);
+        eval::eval(input.trim());
     }
 }

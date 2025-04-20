@@ -10,7 +10,7 @@ impl<'a> Lexer<'a> {
     pub fn new(input: &'a str) -> Self {
         Lexer {
             expr: input.chars(),
-            ch: input.chars().next(),
+            ch: None,
         }
     }
 
@@ -20,9 +20,24 @@ impl<'a> Lexer<'a> {
 
     pub fn lex(&mut self) -> Result<Vec<Token>, String> {
         let mut tokens = Vec::new();
+        self.advance();
         while let Some(c) = self.ch {
             match c {
-                '0'..='9' | '.' => tokens.push(self.number()),
+                '0'..='9' | '.' => {
+                    let mut num = String::new();
+                    while let Some(c) = self.ch {
+                        if c.is_digit(10) || c == '.' {
+                            num.push(c);
+                        } else {
+                            break;
+                        }
+                        self.advance();
+                    }
+                    tokens.push(Token::Num(
+                        num.parse::<f64>()
+                            .expect("Failed to parse a string into a number"),
+                    ));
+                }
                 '+' => {
                     tokens.push(Token::Plus);
                     self.advance();
@@ -50,21 +65,5 @@ impl<'a> Lexer<'a> {
             }
         }
         Ok(tokens)
-    }
-
-    fn number(&mut self) -> Token {
-        let mut num = String::new();
-        while let Some(c) = self.ch {
-            if c.is_numeric() || c == '.' {
-                num.push(c);
-                self.advance();
-            } else {
-                break;
-            }
-        }
-        Token::Num(
-            num.parse::<f64>()
-                .expect("Failed to parse a string into a number"),
-        )
     }
 }
