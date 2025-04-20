@@ -66,6 +66,10 @@ impl<'a> Lexer<'a> {
                     tokens.push(Token::RightParen);
                     self.advance();
                 }
+                '!' => {
+                    tokens.push(Token::Exclamation);
+                    self.advance();
+                }
                 ' ' | '\t' | '\n' => self.advance(),
                 _ => {
                     return Err(format!(

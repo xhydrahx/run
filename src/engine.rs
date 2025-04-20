@@ -22,13 +22,40 @@ fn calculate(expr: Expr) -> f64 {
                 Operator::Multiplication => l * r,
                 Operator::Division => l / r,
                 Operator::Exponent => l.powf(r),
+                _ => unreachable!(),
             }
         }
-        Expr::Unary(op, right) => {
-            let r = calculate(*right);
+        Expr::Unary(op, side) => {
+            let n = calculate(*side);
 
             match op {
-                Operator::Subtraction => -r,
+                Operator::Subtraction => -n,
+                Operator::Factorial(amount) => {
+                    if amount == 0 || n == 0.0 {
+                        return 1.0;
+                    }
+
+                    if amount == 1 {
+                        let mut f: i128 = 1;
+                        for i in 1..((n + 1.0) as i64) {
+                            f *= i as i128;
+                        }
+                        f as f64
+                    } else {
+                        let mut result = 1;
+                        let mut i = n;
+
+                        loop {
+                            result *= i as i64;
+                            if i <= amount as f64 || i > 0.0 {
+                                break;
+                            }
+                            i -= amount as f64;
+                        }
+
+                        result as f64
+                    }
+                }
                 _ => unreachable!(),
             }
         }
