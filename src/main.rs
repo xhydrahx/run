@@ -1,5 +1,5 @@
 mod calc;
-mod eval;
+mod engine;
 
 fn main() {
     calc::run();
