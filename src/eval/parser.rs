@@ -34,17 +34,20 @@ impl<'a> Parser<'a> {
             Some(Token::Num(n)) => Ok(Expr::Num(*n)),
             Some(Token::LeftParen) => Ok(self.paren()?),
             Some(Token::Minus) => match self.tokens.next() {
-                Some(Token::Num(n)) => Ok(Expr::UnaryOp(
-                    Operator::Subtraction,
-                    Box::new(Expr::Num(*n)),
-                )),
-                Some(Token::LeftParen) => Ok(Expr::UnaryOp(
-                    Operator::Subtraction,
-                    Box::new(self.paren()?),
-                )),
-                _ => Err("Unkown unary '-' arguements".into()),
+                Some(Token::Num(n)) => {
+                    Ok(Expr::Unary(Operator::Subtraction, Box::new(Expr::Num(*n))))
+                }
+                Some(Token::LeftParen) => {
+                    Ok(Expr::Unary(Operator::Subtraction, Box::new(self.paren()?)))
+                }
+                Some(token) => Err(format!("Unexpected token '{}' after unary '-': Expected a number, an opening parenthesis '(', or a valid unary expression.", token)),
+             None => Err("Unexpected end of expression. Expected a number, '(', or unary operator before end.".into()),
             },
-            _ => Err("Unkown infix symbol".into()),
+            Some(token) => Err(format!(
+                "Unexpected token '{}' encountered: Expected a number, an opening parenthesis '(', or a unary operator.",
+                token
+            )),
+            None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
         }
     }
 
@@ -70,7 +73,7 @@ impl<'a> Parser<'a> {
         }
 
         if depth != 0 {
-            return Err("Unclosed parenthesis".into());
+            return Err(format!("Unclosed parenthesis: {} unmatched '('. Expected {} closing ')' before end of expression.", depth, depth));
         }
 
         Parser::new(tokens.as_slice()).parse()
@@ -81,7 +84,7 @@ impl<'a> Parser<'a> {
         match token {
             Token::Plus => {
                 let right = self.primary(token.precedence() + 1)?;
-                Ok(Expr::BinaryOp(
+                Ok(Expr::Binary(
                     Box::new(left),
                     Operator::Addition,
                     Box::new(right),
@@ -89,7 +92,7 @@ impl<'a> Parser<'a> {
             }
             Token::Minus => {
                 let right = self.primary(token.precedence() + 1)?;
-                Ok(Expr::BinaryOp(
+                Ok(Expr::Binary(
                     Box::new(left),
                     Operator::Subtraction,
                     Box::new(right),
@@ -97,7 +100,7 @@ impl<'a> Parser<'a> {
             }
             Token::Star => {
                 let right = self.primary(token.precedence() + 1)?;
-                Ok(Expr::BinaryOp(
+                Ok(Expr::Binary(
                     Box::new(left),
                     Operator::Multiplication,
                     Box::new(right),
@@ -105,7 +108,7 @@ impl<'a> Parser<'a> {
             }
             Token::Slash => {
                 let right = self.primary(token.precedence() + 1)?;
-                Ok(Expr::BinaryOp(
+                Ok(Expr::Binary(
                     Box::new(left),
                     Operator::Division,
                     Box::new(right),
@@ -113,13 +116,17 @@ impl<'a> Parser<'a> {
             }
             Token::Carrot => {
                 let right = self.primary(token.precedence())?;
-                Ok(Expr::BinaryOp(
+                Ok(Expr::Binary(
                     Box::new(left),
                     Operator::Exponent,
                     Box::new(right),
                 ))
             }
-            _ => Err("Unkown postfix symbol".into()),
+            token => Err(format!(
+                "Unknown binary operator '{}':
+                    Expected one of: '+', '-', '*', '/', '%', etc.",
+                token
+            )),
         }
     }
 }

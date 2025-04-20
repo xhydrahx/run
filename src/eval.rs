@@ -25,7 +25,7 @@ pub fn eval(input: &str) {
 fn calculate(expr: &Expr) -> f64 {
     match expr {
         Expr::Num(n) => *n,
-        Expr::BinaryOp(left, op, right) => {
+        Expr::Binary(left, op, right) => {
             let l = calculate(left);
             let r = calculate(right);
 
@@ -37,7 +37,7 @@ fn calculate(expr: &Expr) -> f64 {
                 Operator::Exponent => l.powf(r),
             }
         }
-        Expr::UnaryOp(op, right) => {
+        Expr::Unary(op, right) => {
             let r = calculate(right);
 
             match op {
