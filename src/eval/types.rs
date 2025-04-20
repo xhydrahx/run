@@ -19,14 +19,17 @@ impl Token {
     }
 }
 
+#[derive(Debug)]
 pub enum Expr {
     Num(f64),
-    BinaryOp(Operator, Box<Expr>, Box<Expr>),
+    BinaryOp(Box<Expr>, Operator, Box<Expr>),
 }
 
+#[derive(Debug)]
 pub enum Operator {
     Addition,
     Subtraction,
     Multiplication,
     Division,
+    Exponent,
 }
