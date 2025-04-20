@@ -68,7 +68,10 @@ impl<'a> Lexer<'a> {
                 }
                 ' ' | '\t' | '\n' => self.advance(),
                 _ => {
-                    return Err(format!("Unknown symbol '{}'", c));
+                    return Err(format!(
+                        "Unknown token '{}': This token is not recognized as part of a valid expression. Check for typos or invalid characters.",
+                        c
+                    ));
                 }
             }
         }
