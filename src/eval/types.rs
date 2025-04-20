@@ -25,6 +25,7 @@ impl Token {
 pub enum Expr {
     Num(f64),
     BinaryOp(Box<Expr>, Operator, Box<Expr>),
+    UnaryOp(Operator, Box<Expr>),
 }
 
 #[derive(Debug)]

@@ -34,9 +34,15 @@ impl<'a> Parser<'a> {
             Some(Token::Num(n)) => Ok(Expr::Num(*n)),
             Some(Token::LeftParen) => Ok(self.paren()?),
             Some(Token::Minus) => match self.tokens.next() {
-                Some(Token::Num(n)) => Ok(Expr::Num(-*n)),
-                Some(Token::LeftParen) => Ok(self.paren()?),
-                _ => Err("Unexpected token after '-'".into()),
+                Some(Token::Num(n)) => Ok(Expr::UnaryOp(
+                    Operator::Subtraction,
+                    Box::new(Expr::Num(*n)),
+                )),
+                Some(Token::LeftParen) => Ok(Expr::UnaryOp(
+                    Operator::Subtraction,
+                    Box::new(self.paren()?),
+                )),
+                _ => Err("Unkown unary '-' arguements".into()),
             },
             _ => Err("Unkown infix symbol".into()),
         }

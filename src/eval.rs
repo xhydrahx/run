@@ -37,5 +37,13 @@ fn calculate(expr: &Expr) -> f64 {
                 Operator::Exponent => l.powf(r),
             }
         }
+        Expr::UnaryOp(op, right) => {
+            let r = calculate(right);
+
+            match op {
+                Operator::Subtraction => -r,
+                _ => unreachable!(),
+            }
+        }
     }
 }
