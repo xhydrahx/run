@@ -18,7 +18,7 @@ impl Token {
             Token::Star | Token::Slash => 2,
             Token::Carrot => 3,
             Token::Exclamation => 4,
-            _ => 0
+            _ => 0,
         }
     }
 }
