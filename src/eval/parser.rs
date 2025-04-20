@@ -19,7 +19,7 @@ impl<'a> Parser<'a> {
     fn primary(&mut self, precedence: u8) -> Result<Expr, String> {
         let mut left = self.prefix()?;
 
-        while let Some(&token) =  self.tokens.peek() {
+        while let Some(&token) = self.tokens.peek() {
             if token.precedence() < precedence {
                 break;
             }
@@ -32,6 +32,10 @@ impl<'a> Parser<'a> {
     fn prefix(&mut self) -> Result<Expr, String> {
         match self.tokens.next() {
             Some(Token::Num(n)) => Ok(Expr::Num(*n)),
+            Some(Token::Minus) => match self.tokens.next() {
+                Some(Token::Num(n)) => Ok(Expr::Num(-*n)),
+                _ => Err("Unexpected token after '-'".into()),
+            },
             _ => Err("Unkown infix symbol".into()),
         }
     }
