@@ -32,12 +32,42 @@ impl<'a> Parser<'a> {
     fn prefix(&mut self) -> Result<Expr, String> {
         match self.tokens.next() {
             Some(Token::Num(n)) => Ok(Expr::Num(*n)),
+            Some(Token::LeftParen) => Ok(self.paren()?),
             Some(Token::Minus) => match self.tokens.next() {
                 Some(Token::Num(n)) => Ok(Expr::Num(-*n)),
+                Some(Token::LeftParen) => Ok(self.paren()?),
                 _ => Err("Unexpected token after '-'".into()),
             },
             _ => Err("Unkown infix symbol".into()),
         }
+    }
+
+    fn paren(&mut self) -> Result<Expr, String> {
+        let mut tokens = Vec::new();
+        let mut depth = 1;
+
+        while let Some(token) = self.tokens.next() {
+            match token {
+                Token::LeftParen => {
+                    depth += 1;
+                    tokens.push(*token);
+                }
+                Token::RightParen => {
+                    depth -= 1;
+                    if depth == 0 {
+                        break;
+                    }
+                    tokens.push(*token);
+                }
+                _ => tokens.push(*token),
+            }
+        }
+
+        if depth != 0 {
+            return Err("Unclosed parenthesis".into());
+        }
+
+        Parser::new(tokens.as_slice()).parse()
     }
 
     fn infix(&mut self, left: Expr) -> Result<Expr, String> {
