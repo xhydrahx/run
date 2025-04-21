@@ -42,15 +42,15 @@ fn calculate(expr: Expr) -> f64 {
                         }
                         f as f64
                     } else {
-                        let mut result = 1;
-                        let mut i = n;
+                        let mut result: u128 = 1;
+                        let mut i: u128 = n as u128;
 
-                        loop {
-                            result *= i as i64;
-                            if i <= amount as f64 || i > 0.0 {
+                        while i > 0 {
+                            result *= i as u128;
+                            if i <= amount as u128 {
                                 break;
                             }
-                            i -= amount as f64;
+                            i -= amount as u128;
                         }
 
                         result as f64
