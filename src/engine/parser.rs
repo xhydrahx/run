@@ -53,7 +53,7 @@ impl<'a> Parser<'a> {
                     Ok(Expr::Unary(Operator::Subtraction, Box::new(self.paren()?)))
                 }
                 Some(token) => Err(format!("Unexpected token '{}' after unary '-': Expected a number, an opening parenthesis '(', or a valid unary expression.", token)),
-             None => Err("Unexpected end of expression. Expected a number, '(', or unary operator before end.".into()),
+             None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
             },
             Some(token) => Err(format!(
                 "Unexpected token '{}' encountered: Expected a number, an opening parenthesis '(', or a unary operator.",
