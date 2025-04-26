@@ -1,6 +1,7 @@
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub enum Token {
     Num(f64),
+    Identifier(String),
     Plus,
     Minus,
     Star,
@@ -27,6 +28,7 @@ impl std::fmt::Display for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let s = match self {
             Token::Num(n) => &n.to_string(),
+            Token::Identifier(i) => &i.to_string(),
             Token::Plus => "+",
             Token::Minus => "-",
             Token::Star => "*",

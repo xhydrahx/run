@@ -38,6 +38,18 @@ impl<'a> Lexer<'a> {
                             .expect("Failed to parse a string into a number"),
                     ));
                 }
+                'a'..='z' | 'A'..='Z' => {
+                    let mut identifier = String::new();
+                    while let Some(c) = self.ch {
+                        if c.is_alphabetic() {
+                            identifier.push(c);
+                        } else {
+                            break;
+                        }
+                        self.advance();
+                    }
+                    tokens.push(Token::Identifier(identifier));
+                }
                 '+' => {
                     tokens.push(Token::Plus);
                     self.advance();

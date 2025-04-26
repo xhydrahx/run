@@ -1,5 +1,5 @@
 use super::types::{Expr, Operator, Token};
-use std::{iter::Peekable, slice::Iter};
+use std::{f64::consts, iter::Peekable, slice::Iter};
 
 pub struct Parser<'a> {
     tokens: Peekable<Iter<'a, Token>>,
@@ -31,35 +31,47 @@ impl<'a> Parser<'a> {
 
     fn prefix(&mut self) -> Result<Expr, String> {
         match self.tokens.next() {
-            Some(Token::Num(n)) => match self.tokens.peek() {
-                Some(Token::LeftParen) => {
-                    self.tokens.next();
-                    Ok(Expr::Binary(Box::new(Expr::Num(*n)), Operator::Multiplication, Box::new(self.paren()?)))
-                }
-                _ => Ok(Expr::Num(*n))
-            }
+            Some(Token::Num(n)) => self.num(*n),
             Some(Token::LeftParen) => Ok(self.paren()?),
             Some(Token::Minus) => match self.tokens.next() {
-                Some(Token::Num(n)) => {
-                   match self.tokens.peek() {
-                       Some(Token::LeftParen) => {
-                           self.tokens.next();
-                           Ok(Expr::Binary(Box::new(Expr::Num(-*n)), Operator::Multiplication, Box::new(self.paren()?)))
-                       }
-                   _ => Ok(Expr::Unary(Operator::Subtraction, Box::new(Expr::Num(*n))))
-                   }
-                }
-                Some(Token::LeftParen) => {
-                    Ok(Expr::Unary(Operator::Subtraction, Box::new(self.paren()?)))
-                }
+                Some(Token::Num(n)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.num(*n)?))),
+                Some(Token::LeftParen) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.paren()?))),
+                Some(Token::Identifier(id)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.ident(id)?))), 
                 Some(token) => Err(format!("Unexpected token '{}' after unary '-': Expected a number, an opening parenthesis '(', or a valid unary expression.", token)),
-             None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
+                None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
             },
+            Some(Token::Identifier(id)) => self.ident(id),
             Some(token) => Err(format!(
                 "Unexpected token '{}' encountered: Expected a number, an opening parenthesis '(', or a unary operator.",
                 token
             )),
             None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
+        }
+    }
+
+    fn ident(&mut self, id: &str) -> Result<Expr, String> {
+        match id {
+            "e" => self.num(consts::E),
+            "pi" => self.num(consts::PI),
+            "phi" => self.num((1.0 + 5.0_f64.sqrt()) / 2.0),
+            _ => Err(format!(
+                "Unknown identifier '{}' encountered: Expected a valid identifier.",
+                id
+            )),
+        }
+    }
+
+    fn num(&mut self, num: f64) -> Result<Expr, String> {
+        match self.tokens.peek() {
+            Some(Token::LeftParen) => {
+                self.tokens.next();
+                Ok(Expr::Binary(
+                    Box::new(Expr::Num(num)),
+                    Operator::Multiplication,
+                    Box::new(self.paren()?),
+                ))
+            }
+            _ => Ok(Expr::Num(num)),
         }
     }
 
@@ -71,16 +83,16 @@ impl<'a> Parser<'a> {
             match token {
                 Token::LeftParen => {
                     depth += 1;
-                    tokens.push(*token);
+                    tokens.push(token.to_owned());
                 }
                 Token::RightParen => {
                     depth -= 1;
                     if depth == 0 {
                         break;
                     }
-                    tokens.push(*token);
+                    tokens.push(token.to_owned());
                 }
-                _ => tokens.push(*token),
+                _ => tokens.push(token.to_owned()),
             }
         }
 
