@@ -1,6 +1,7 @@
 mod lexer;
 mod parser;
 mod types;
+
 use super::engine::lexer::Lexer;
 use super::engine::parser::Parser;
 use super::engine::types::{Expr, Operator};
@@ -12,6 +13,18 @@ pub fn expr(input: &str) -> Result<f64, String> {
 fn calculate(expr: Expr) -> f64 {
     match expr {
         Expr::Num(n) => n,
+	Expr::Function(id, mut args) => {
+	    let mut nums = Vec::new();
+	    for arg in args.iter() {
+		nums.push(calculate((**arg).clone()))
+	    }
+
+	    match id.as_str() {
+		"sqrt" => nums[0].sqrt(),
+		_ => unreachable!(),
+	    }
+	
+	}
         Expr::Binary(left, op, right) => {
             let l = calculate(*left);
             let r = calculate(*right);
