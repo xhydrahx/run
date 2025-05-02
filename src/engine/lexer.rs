@@ -44,11 +44,13 @@ impl<'a> Lexer<'a> {
                     while let Some(c) = self.ch {
                         if c.is_alphabetic() {
                             identifier.push(c);
-                        }
+                        } else {
+			    break;
+			}
                         self.advance();
                     }
 		    
-                    tokens.push(Token::Identifier(identifier.clone()));
+                    tokens.push(Token::Identifier(identifier));
                 }
                 '+' => {
                     tokens.push(Token::Plus);
