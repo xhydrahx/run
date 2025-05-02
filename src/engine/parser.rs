@@ -54,12 +54,22 @@ impl<'a> Parser<'a> {
             "e" => self.num(consts::E),
             "pi" => self.num(consts::PI),
             "phi" => self.num((1.0 + 5.0_f64.sqrt()) / 2.0),
-	    "sqrt" => Ok(Expr::Function(id.to_string(), vec![Box::new(self.paren()?)])),
+	    "sqrt" => self.func(id),
 	    _ => Err(format!(
                 "Unknown identifier '{}' encountered: Expected a valid identifier.",
                 id
             )),
         }
+    }
+
+    fn func(&mut self, id: &str) -> Result<Expr, String> {
+	match self.tokens.peek() {
+	    Some(Token::LeftParen) => {
+		self.tokens.next();
+		Ok(Expr::Function(id.to_string(), vec![Box::new(self.paren()?)]))
+	    }
+	    _ => Err("Expected a parenthesis".into()),
+	}
     }
 
     fn num(&mut self, num: f64) -> Result<Expr, String> {
