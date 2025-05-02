@@ -54,7 +54,8 @@ impl<'a> Parser<'a> {
             "e" => self.num(consts::E),
             "pi" => self.num(consts::PI),
             "phi" => self.num((1.0 + 5.0_f64.sqrt()) / 2.0),
-            _ => Err(format!(
+	    "sqrt" => Ok(Expr::Function(id.to_string(), vec![Box::new(self.paren()?)])),
+	    _ => Err(format!(
                 "Unknown identifier '{}' encountered: Expected a valid identifier.",
                 id
             )),
