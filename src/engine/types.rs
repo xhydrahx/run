@@ -2,6 +2,7 @@
 pub enum Token {
     Num(f64),
     Identifier(String),
+    
     Plus,
     Minus,
     Star,
@@ -42,14 +43,15 @@ impl std::fmt::Display for Token {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expr {
     Num(f64),
+    Function(String, Vec<Box<Expr>>),
     Binary(Box<Expr>, Operator, Box<Expr>),
     Unary(Operator, Box<Expr>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Operator {
     Addition,
     Subtraction,

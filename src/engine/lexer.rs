@@ -21,6 +21,7 @@ impl<'a> Lexer<'a> {
     pub fn lex(&mut self) -> Result<Vec<Token>, String> {
         let mut tokens = Vec::new();
         self.advance();
+	
         while let Some(c) = self.ch {
             match c {
                 '0'..='9' | '.' => {
@@ -43,12 +44,11 @@ impl<'a> Lexer<'a> {
                     while let Some(c) = self.ch {
                         if c.is_alphabetic() {
                             identifier.push(c);
-                        } else {
-                            break;
                         }
                         self.advance();
                     }
-                    tokens.push(Token::Identifier(identifier));
+		    
+                    tokens.push(Token::Identifier(identifier.clone()));
                 }
                 '+' => {
                     tokens.push(Token::Plus);
