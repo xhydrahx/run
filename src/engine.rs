@@ -13,7 +13,7 @@ pub fn expr(input: &str) -> Result<f64, String> {
 fn calculate(expr: Expr) -> f64 {
     match expr {
         Expr::Num(n) => n,
-	Expr::Function(id, mut args) => {
+	Expr::Function(id, args) => {
 	    let mut nums = Vec::new();
 	    for arg in args.iter() {
 		nums.push(calculate((**arg).clone()))
