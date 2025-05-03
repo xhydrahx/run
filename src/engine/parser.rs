@@ -76,7 +76,7 @@ impl<'a> Parser<'a> {
 				break;
 			    }
 
-			    radicand.push(next_token.clone());
+			    radicand.push(next_token.to_owned());
 			}
 
 			Ok(Expr::Function(
@@ -94,7 +94,7 @@ impl<'a> Parser<'a> {
 			break;
 		    }
 
-		    base.push(next_token.clone());
+		    base.push(next_token.to_owned());
 		}
 
                 Ok(Expr::Function(id.to_string(), vec![Box::new(Parser::new(&base).parse()?), Box::new(self.paren()?)]))
