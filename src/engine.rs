@@ -23,6 +23,7 @@ fn calculate(expr: Expr) -> f64 {
 		"sqrt" => nums[0].sqrt(),
 		"ln" => nums[0].ln(),
 		"root" => nums[0].powf(1.0 / nums[1]),
+		"log" => nums[1].log(nums[0]),
 		_ => unreachable!(),
 	    }
 	

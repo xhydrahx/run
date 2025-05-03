@@ -88,6 +88,10 @@ impl<'a> Lexer<'a> {
 		    tokens.push(Token::Comma);
 		    self.advance();
 		}
+		'_' => {
+		    tokens.push(Token::Underscore);
+		    self.advance();
+		}
                 ' ' | '\t' | '\n' => self.advance(),
                 _ => {
                     return Err(format!(
