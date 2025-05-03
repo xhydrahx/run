@@ -21,6 +21,7 @@ fn calculate(expr: Expr) -> f64 {
 
 	    match id.as_str() {
 		"sqrt" => nums[0].sqrt(),
+		"ln" => nums[0].ln(),
 		_ => unreachable!(),
 	    }
 	
