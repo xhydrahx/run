@@ -55,6 +55,7 @@ impl<'a> Parser<'a> {
             "pi" => self.num(consts::PI),
             "phi" => self.num((1.0 + 5.0_f64.sqrt()) / 2.0),
 	    "sqrt" => self.func(id),
+	    "ln" => self.func(id),
 	    _ => Err(format!(
                 "Unknown identifier '{}' encountered: Expected a valid identifier.",
                 id
