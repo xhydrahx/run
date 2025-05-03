@@ -57,6 +57,7 @@ impl<'a> Parser<'a> {
 	    "sqrt" => self.func(id),
 	    "ln" => self.func(id),
 	    "root" => self.func(id),
+	    "log" => self.func(id),
 	    _ => Err(format!(
                 "Unknown identifier '{}' encountered: Expected a valid identifier.",
                 id
@@ -65,9 +66,8 @@ impl<'a> Parser<'a> {
     }
 
     fn func(&mut self, id: &str) -> Result<Expr, String> {
-	match self.tokens.peek() {
+	match self.tokens.next() {
 	    Some(Token::LeftParen) => {
-		self.tokens.next();
 		match id {
 		    "root" => {
 			let mut radicand = Vec::new();
@@ -86,6 +86,18 @@ impl<'a> Parser<'a> {
 		    }
 		    _ => Ok(Expr::Function(id.to_string(), vec![Box::new(self.paren()?)]))
 		}
+	    }
+	    Some(Token::Underscore) => {
+		let mut base = Vec::new();
+		while let Some(next_token) = self.tokens.next() {
+		    if next_token == &Token::LeftParen {
+			break;
+		    }
+
+		    base.push(next_token.clone());
+		}
+
+                Ok(Expr::Function(id.to_string(), vec![Box::new(Parser::new(&base).parse()?), Box::new(self.paren()?)]))
 	    }
 	    None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end".into()),
 	    token => Err(format!("Unexpected '{}': Expected parenthesis after '{}'", token.unwrap(), id)),
