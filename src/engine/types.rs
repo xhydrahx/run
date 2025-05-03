@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Num(f64),
     Identifier(String),
@@ -11,6 +11,8 @@ pub enum Token {
     LeftParen,
     RightParen,
     Exclamation,
+
+    Comma,
 }
 
 impl Token {
@@ -38,6 +40,7 @@ impl std::fmt::Display for Token {
             Token::LeftParen => "(",
             Token::RightParen => ")",
             Token::Exclamation => "!",
+	    Token::Comma => ",",
         };
         write!(f, "{}", s)
     }
