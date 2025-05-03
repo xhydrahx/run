@@ -13,6 +13,7 @@ pub enum Token {
     Exclamation,
 
     Comma,
+    Underscore,
 }
 
 impl Token {
@@ -41,6 +42,7 @@ impl std::fmt::Display for Token {
             Token::RightParen => ")",
             Token::Exclamation => "!",
 	    Token::Comma => ",",
+	    Token::Underscore => "_",
         };
         write!(f, "{}", s)
     }
