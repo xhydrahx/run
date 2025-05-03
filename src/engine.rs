@@ -13,21 +13,20 @@ pub fn expr(input: &str) -> Result<f64, String> {
 fn calculate(expr: Expr) -> f64 {
     match expr {
         Expr::Num(n) => n,
-	Expr::Function(id, args) => {
-	    let mut nums = Vec::new();
-	    for arg in args.iter() {
-		nums.push(calculate((**arg).clone()))
-	    }
+        Expr::Function(id, args) => {
+            let mut nums = Vec::new();
+            for arg in args.iter() {
+                nums.push(calculate((**arg).clone()))
+            }
 
-	    match id.as_str() {
-		"sqrt" => nums[0].sqrt(),
-		"ln" => nums[0].ln(),
-		"root" => nums[0].powf(1.0 / nums[1]),
-		"log" => nums[1].log(nums[0]),
-		_ => unreachable!(),
-	    }
-	
-	}
+            match id.as_str() {
+                "sqrt" => nums[0].sqrt(),
+                "ln" => nums[0].ln(),
+                "root" => nums[0].powf(1.0 / nums[1]),
+                "log" => nums[1].log(nums[0]),
+                _ => unreachable!(),
+            }
+        }
         Expr::Binary(left, op, right) => {
             let l = calculate(*left);
             let r = calculate(*right);

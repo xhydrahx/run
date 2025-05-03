@@ -2,7 +2,7 @@
 pub enum Token {
     Num(f64),
     Identifier(String),
-    
+
     Plus,
     Minus,
     Star,
@@ -41,8 +41,8 @@ impl std::fmt::Display for Token {
             Token::LeftParen => "(",
             Token::RightParen => ")",
             Token::Exclamation => "!",
-	    Token::Comma => ",",
-	    Token::Underscore => "_",
+            Token::Comma => ",",
+            Token::Underscore => "_",
         };
         write!(f, "{}", s)
     }

@@ -36,7 +36,7 @@ impl<'a> Parser<'a> {
             Some(Token::Minus) => match self.tokens.next() {
                 Some(Token::Num(n)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.num(*n)?))),
                 Some(Token::LeftParen) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.paren()?))),
-                Some(Token::Identifier(id)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.ident(id)?))), 
+                Some(Token::Identifier(id)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.ident(id)?))),
                 Some(token) => Err(format!("Unexpected token '{}' after unary '-': Expected a number, an opening parenthesis '(', or a valid unary expression.", token)),
                 None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
             },
@@ -54,11 +54,11 @@ impl<'a> Parser<'a> {
             "e" => self.num(consts::E),
             "pi" => self.num(consts::PI),
             "phi" => self.num((1.0 + 5.0_f64.sqrt()) / 2.0),
-	    "sqrt" => self.func(id),
-	    "ln" => self.func(id),
-	    "root" => self.func(id),
-	    "log" => self.func(id),
-	    _ => Err(format!(
+            "sqrt" => self.func(id),
+            "ln" => self.func(id),
+            "root" => self.func(id),
+            "log" => self.func(id),
+            _ => Err(format!(
                 "Unknown identifier '{}' encountered: Expected a valid identifier.",
                 id
             )),
@@ -66,7 +66,7 @@ impl<'a> Parser<'a> {
     }
 
     fn func(&mut self, id: &str) -> Result<Expr, String> {
-	match self.tokens.next() {
+        match self.tokens.next() {
 	    Some(Token::LeftParen) => {
 		match id {
 		    "root" => {
