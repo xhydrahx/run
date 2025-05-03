@@ -84,6 +84,7 @@ impl<'a> Parser<'a> {
 			    vec![Box::new(Parser::new(&radicand).parse()?), Box::new(self.paren()?)]
 		        ))
 		    }
+		    "log" => Ok(Expr::Function(id.to_string(), vec![Box::new(Expr::Num(10.0)), Box::new(self.paren()?)])),
 		    _ => Ok(Expr::Function(id.to_string(), vec![Box::new(self.paren()?)]))
 		}
 	    }
