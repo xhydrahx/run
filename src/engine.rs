@@ -33,6 +33,13 @@ fn calculate(expr: Expr) -> f64 {
                 "cot" => 1.0 / nums[0].sin(),
                 "sec" => 1.0 / nums[0].cos(),
                 "csc" => 1.0 / nums[0].tan(),
+
+                "asin" => nums[0].asin(),
+                "acos" => nums[0].acos(),
+                "atan" => nums[0].atan(),
+                "acot" => 1.0 / nums[0].atan(),
+                "asec" => 1.0 / nums[0].acos(),
+                "acsc" => 1.0 / nums[0].asin(),
                 _ => unreachable!(),
             }
         }
