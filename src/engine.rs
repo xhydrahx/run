@@ -2,9 +2,11 @@ mod lexer;
 mod parser;
 mod types;
 
-use super::engine::lexer::Lexer;
-use super::engine::parser::Parser;
-use super::engine::types::{Expr, Operator};
+use super::engine::{
+    lexer::Lexer,
+    parser::Parser,
+    types::{Expr, Operator},
+};
 
 pub fn expr(input: &str) -> Result<f64, String> {
     Ok(calculate(Parser::new(&Lexer::new(input).lex()?).parse()?))
@@ -25,9 +27,12 @@ fn calculate(expr: Expr) -> f64 {
                 "root" => nums[0].powf(1.0 / nums[1]),
                 "log" => nums[1].log(nums[0]),
 
-		"sin" => nums[0].sin(),
-		"cos" => nums[0].cos(),
-		"tan" => nums[0].tan(),
+                "sin" => nums[0].sin(),
+                "cos" => nums[0].cos(),
+                "tan" => nums[0].tan(),
+                "cot" => 1.0 / nums[0].sin(),
+                "sec" => 1.0 / nums[0].cos(),
+                "csc" => 1.0 / nums[0].tan(),
                 _ => unreachable!(),
             }
         }
