@@ -40,6 +40,20 @@ fn calculate(expr: Expr) -> f64 {
                 "acot" => 1.0 / nums[0].atan(),
                 "asec" => 1.0 / nums[0].acos(),
                 "acsc" => 1.0 / nums[0].asin(),
+
+		"sinh" => nums[0].sinh(),
+		"cosh" => nums[0].cosh(),
+		"tanh" => nums[0].tanh(),
+		"coth" => 1.0 / nums[0].tanh(),
+		"sech" => 1.0 / nums[0].cosh(),
+		"csch" => 1.0 / nums[0].sinh(),
+
+		"asinh" => nums[0].asinh(),
+		"acosh" => nums[0].acosh(),
+		"atanh" => nums[0].atanh(),
+		"acoth" => 1.0 / nums[0].atanh(),
+		"asech" => 1.0 / nums[0].acosh(),
+		"acsch" => 1.0 / nums[0].asinh(),
                 _ => unreachable!(),
             }
         }
