@@ -13,7 +13,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse(&mut self) -> Result<Expr, String> {
-        self.primary(0)?
+        self.primary(0)
     }
 
     fn primary(&mut self, precedence: u8) -> Result<Expr, String> {
@@ -65,6 +65,13 @@ impl<'a> Parser<'a> {
             "cot" => self.func(id),
             "sec" => self.func(id),
             "csc" => self.func(id),
+
+            "asin" => self.func(id),
+            "acos" => self.func(id),
+            "atan" => self.func(id),
+            "acot" => self.func(id),
+            "asec" => self.func(id),
+            "acsc" => self.func(id),
             _ => Err(format!(
                 "Unknown identifier '{}' encountered: Expected a valid identifier.",
                 id
