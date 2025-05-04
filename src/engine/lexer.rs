@@ -1,38 +1,31 @@
 use super::types::Token;
-use std::str::Chars;
+use std::{iter::Peekable, str::Chars};
 
 pub struct Lexer<'a> {
-    expr: Chars<'a>,
-    ch: Option<char>,
+    expr: Peekable<Chars<'a>>,
 }
 
 impl<'a> Lexer<'a> {
     pub fn new(input: &'a str) -> Self {
         Lexer {
-            expr: input.chars(),
-            ch: None,
+            expr: input.chars().peekable(),
         }
-    }
-
-    fn advance(&mut self) {
-        self.ch = self.expr.next();
     }
 
     pub fn lex(&mut self) -> Result<Vec<Token>, String> {
         let mut tokens = Vec::new();
-        self.advance();
 
-        while let Some(c) = self.ch {
+        while let Some(c) = self.expr.peek() {
             match c {
                 '0'..='9' | '.' => {
                     let mut num = String::new();
-                    while let Some(c) = self.ch {
-                        if c.is_digit(10) || c == '.' {
-                            num.push(c);
+                    while let Some(c) = self.expr.peek() {
+                        if c.is_digit(10) || c == &'.' {
+                            num.push(*c);
                         } else {
                             break;
                         }
-                        self.advance();
+                        self.expr.next();
                     }
                     tokens.push(Token::Num(
                         num.parse::<f64>()
@@ -41,58 +34,60 @@ impl<'a> Lexer<'a> {
                 }
                 'a'..='z' | 'A'..='Z' => {
                     let mut identifier = String::new();
-                    while let Some(c) = self.ch {
+                    while let Some(c) = self.expr.peek() {
                         if c.is_alphabetic() {
-                            identifier.push(c);
+                            identifier.push(*c);
                         } else {
                             break;
                         }
-                        self.advance();
+                        self.expr.next();
                     }
 
                     tokens.push(Token::Identifier(identifier));
                 }
                 '+' => {
                     tokens.push(Token::Plus);
-                    self.advance();
+                    self.expr.next();
                 }
                 '-' => {
                     tokens.push(Token::Minus);
-                    self.advance();
+                    self.expr.next();
                 }
                 '*' => {
                     tokens.push(Token::Star);
-                    self.advance();
+                    self.expr.next();
                 }
                 '/' => {
                     tokens.push(Token::Slash);
-                    self.advance();
+                    self.expr.next();
                 }
                 '^' => {
                     tokens.push(Token::Carrot);
-                    self.advance();
+                    self.expr.next();
                 }
                 '(' => {
                     tokens.push(Token::LeftParen);
-                    self.advance();
+                    self.expr.next();
                 }
                 ')' => {
                     tokens.push(Token::RightParen);
-                    self.advance();
+                    self.expr.next();
                 }
                 '!' => {
                     tokens.push(Token::Exclamation);
-                    self.advance();
+                    self.expr.next();
                 }
                 ',' => {
                     tokens.push(Token::Comma);
-                    self.advance();
+                    self.expr.next();
                 }
                 '_' => {
                     tokens.push(Token::Underscore);
-                    self.advance();
+                    self.expr.next();
                 }
-                ' ' | '\t' | '\n' => self.advance(),
+                ' ' | '\t' | '\n' => {
+                    self.expr.next();
+                }
                 _ => {
                     return Err(format!(
                         "Unknown token '{}': This token is not recognized as part of a valid expression. Check for typos or invalid characters.",
