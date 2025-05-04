@@ -58,6 +58,10 @@ impl<'a> Parser<'a> {
             "ln" => self.func(id),
             "root" => self.func(id),
             "log" => self.func(id),
+	    
+	    "sin" => self.func(id),
+	    "cos" => self.func(id),
+	    "tan" => self.func(id),
             _ => Err(format!(
                 "Unknown identifier '{}' encountered: Expected a valid identifier.",
                 id
