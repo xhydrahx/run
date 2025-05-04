@@ -24,6 +24,10 @@ fn calculate(expr: Expr) -> f64 {
                 "ln" => nums[0].ln(),
                 "root" => nums[0].powf(1.0 / nums[1]),
                 "log" => nums[1].log(nums[0]),
+
+		"sin" => nums[0].sin(),
+		"cos" => nums[0].cos(),
+		"tan" => nums[0].tan(),
                 _ => unreachable!(),
             }
         }
