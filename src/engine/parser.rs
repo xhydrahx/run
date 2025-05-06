@@ -71,21 +71,21 @@ impl<'a> Parser<'a> {
             "atan" => self.func(id),
             "acot" => self.func(id),
             "asec" => self.func(id),
-	    "acsc" => self.func(id),
+            "acsc" => self.func(id),
 
-	    "sinh" => self.func(id),
-	    "cosh" => self.func(id),
-	    "tanh" => self.func(id),
-	    "coth" => self.func(id),
-	    "sech" => self.func(id),
-	    "csch" => self.func(id),
+            "sinh" => self.func(id),
+            "cosh" => self.func(id),
+            "tanh" => self.func(id),
+            "coth" => self.func(id),
+            "sech" => self.func(id),
+            "csch" => self.func(id),
 
-	    "asinh" => self.func(id),
-	    "acosh" => self.func(id),
-	    "atanh" => self.func(id),
-	    "acoth" => self.func(id),
-	    "asech" => self.func(id),
-	    "acsch" => self.func(id),
+            "asinh" => self.func(id),
+            "acosh" => self.func(id),
+            "atanh" => self.func(id),
+            "acoth" => self.func(id),
+            "asech" => self.func(id),
+            "acsch" => self.func(id),
             _ => Err(format!(
                 "Unknown identifier '{}' encountered: Expected a valid identifier.",
                 id
@@ -235,6 +235,11 @@ impl<'a> Parser<'a> {
 
                 Ok(Expr::Unary(Operator::Factorial(amount), Box::new(left)))
             }
+            Token::LeftParen => Ok(Expr::Binary(
+                Box::new(left),
+                Operator::Multiplication,
+                Box::new(self.paren()?),
+            )),
             token => Err(format!(
                 "Unknown operator '{}': Expected one of: '+', '-', '*', '/', '^', etc.",
                 token
