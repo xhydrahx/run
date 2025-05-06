@@ -236,6 +236,11 @@ impl<'a> Parser<'a> {
 
                 Ok(Expr::Unary(Operator::Factorial(amount), Box::new(left)))
             }
+            Token::LeftParen => Ok(Expr::Binary(
+                Box::new(left),
+                Operator::Multiplication,
+                Box::new(self.paren()?),
+            )),
             token => Err(format!(
                 "Unknown operator '{}': Expected one of: '+', '-', '*', '/', '^', etc.",
                 token
