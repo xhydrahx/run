@@ -68,6 +68,7 @@ fn calculate(expr: Expr) -> f64 {
                 Operator::Multiplication => l * r,
                 Operator::Division => l / r,
                 Operator::Exponent => l.powf(r),
+                Operator::Percent => l * r / 100.0,
                 _ => unreachable!(),
             }
         }

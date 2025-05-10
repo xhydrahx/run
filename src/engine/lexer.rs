@@ -85,6 +85,10 @@ impl<'a> Lexer<'a> {
                     tokens.push(Token::Underscore);
                     self.expr.next();
                 }
+                '%' => {
+                    tokens.push(Token::Percent);
+                    self.expr.next();
+                }
                 ' ' | '\t' | '\n' => {
                     self.expr.next();
                 }
