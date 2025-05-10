@@ -241,6 +241,14 @@ impl<'a> Parser<'a> {
                 Operator::Multiplication,
                 Box::new(self.paren()?),
             )),
+            Token::Percent => match left {
+                Expr::Binary(l, op, r) => Ok(Expr::Binary(
+                    l.clone(),
+                    op,
+                    Box::new(Expr::Binary(l, Operator::Percent, r)),
+                )),
+                _ => Err("Unexpected expression before '%': Expected a valid usage of '%'".into()),
+            },
             token => Err(format!(
                 "Unknown operator '{}': Expected one of: '+', '-', '*', '/', '^', etc.",
                 token
