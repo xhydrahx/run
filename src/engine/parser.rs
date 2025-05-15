@@ -247,6 +247,10 @@ impl<'a> Parser<'a> {
                     op,
                     Box::new(Expr::Binary(l, Operator::Percent, r)),
                 )),
+                Expr::Unary(op, r) => Ok(Expr::Unary(
+                    op,
+                    Box::new(Expr::Binary(r.clone(), Operator::Percent, r)),
+                )),
                 _ => Err("Unexpected expression before '%': Expected a valid usage of '%'".into()),
             },
             token => Err(format!(
