@@ -8,6 +8,9 @@ use super::engine::{
     types::{Expr, Operator},
 };
 
+use num_bigint::BigUint;
+use num_traits::{One, ToPrimitive, Zero};
+
 pub fn expr(input: &str) -> Result<f64, String> {
     Ok(calculate(Parser::new(&Lexer::new(input).lex()?).parse()?))
 }
@@ -82,26 +85,24 @@ fn calculate(expr: Expr) -> f64 {
                         return 1.0;
                     }
 
-                    if amount == 1 {
-                        let mut f: i128 = 1;
-                        for i in 1..((n + 1.0) as i64) {
-                            f *= i as i128;
-                        }
-                        f as f64
-                    } else {
-                        let mut result: u128 = 1;
-                        let mut i: u128 = n as u128;
+                    let n_u128 = n as u128;
+                    let amt_u128 = amount as u128;
 
-                        while i > 0 {
-                            result *= i as u128;
-                            if i <= amount as u128 {
-                                break;
-                            }
-                            i -= amount as u128;
+                    let mut result = BigUint::one();
+                    let mut i = BigUint::from(n_u128);
+
+                    while i > BigUint::zero() {
+                        result *= &i;
+
+                        if &i <= &BigUint::from(amt_u128) {
+                            break;
                         }
 
-                        result as f64
+                        i -= BigUint::from(amt_u128);
                     }
+
+                    // Convert to f64 for return, with potential loss of precision
+                    result.to_f64().unwrap_or(f64::INFINITY)
                 }
                 _ => unreachable!(),
             }
