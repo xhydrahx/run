@@ -41,12 +41,26 @@ impl<'a> Parser<'a> {
                 None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
             },
             Some(Token::Identifier(id)) => self.ident(id),
+            Some(Token::Bar) => self.absolute(),
             Some(token) => Err(format!(
                 "Unexpected token '{}' encountered: Expected a number, an opening parenthesis '(', or a unary operator.",
                 token
             )),
             None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
         }
+    }
+
+    fn absolute(&mut self) -> Result<Expr, String> {
+        let mut expr = Vec::new();
+        while let Some(token) = self.tokens.next() {
+            if token == &Token::Bar {
+                break;
+            }
+
+            expr.push(token.to_owned());
+        }
+
+        Ok(Expr::Unary(Operator::Absolute, Box::new(Parser::new(&expr).parse()?)))
     }
 
     fn ident(&mut self, id: &str) -> Result<Expr, String> {

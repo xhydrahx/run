@@ -104,6 +104,7 @@ fn calculate(expr: Expr) -> f64 {
                     // Convert to f64 for return, with potential loss of precision
                     result.to_f64().unwrap_or(f64::INFINITY)
                 }
+                Operator::Absolute => n.abs(),
                 _ => unreachable!(),
             }
         }
