@@ -12,6 +12,7 @@ pub enum Token {
     RightParen,
     Exclamation,
     Percent,
+    Bar,
 
     Comma,
     Underscore,
@@ -45,6 +46,7 @@ impl std::fmt::Display for Token {
             Token::Percent => "%",
             Token::Comma => ",",
             Token::Underscore => "_",
+            Token::Bar => "|",
         };
         write!(f, "{}", s)
     }
@@ -67,4 +69,5 @@ pub enum Operator {
     Exponent,
     Factorial(i8),
     Percent,
+    Absolute,
 }
