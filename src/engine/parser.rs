@@ -123,7 +123,10 @@ impl<'a> Parser<'a> {
                         return Ok(Expr::Num(1.0));
                     }
                     _ => {
-                        return Ok(Expr::Num(0.0));
+                        return Err(format!(
+                            "Unexpected variable '{}': Expected a valid variable that has been defined",
+                            id
+                        ));
                     }
                 }
             }
