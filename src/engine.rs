@@ -1,6 +1,7 @@
 mod lexer;
 mod parser;
-mod types;
+pub mod types;
+pub mod identifier;
 
 use super::engine::{
     lexer::Lexer,
@@ -107,6 +108,9 @@ fn calculate(expr: Expr) -> f64 {
                 Operator::Absolute => n.abs(),
                 _ => unreachable!(),
             }
+        }
+        Expr::Variable(_id, value) => {
+            calculate(*value)
         }
     }
 }
