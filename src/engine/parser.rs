@@ -1,6 +1,6 @@
 use super::types::{Expr, Operator, Token};
 use crate::engine::identifier;
-use std::{f64::consts, iter::Peekable, slice::Iter};
+use std::{iter::Peekable, slice::Iter};
 
 pub struct Parser<'a> {
     tokens: Peekable<Iter<'a, Token>>,
@@ -133,17 +133,16 @@ impl<'a> Parser<'a> {
     fn func(&mut self, id: &str) -> Result<Expr, String> {
         match self.tokens.next() {
 	    Some(Token::LeftParen) => {
-		match id {
-		    "root" => {
-			    let mut radicand = Vec::new();
-			    while let Some(next_token) = self.tokens.next() {
-			        if next_token == &Token::Comma {
-				        break;
-			        }
+		    match id {
+		        "root" => {
+			        let mut radicand = Vec::new();
+			        while let Some(next_token) = self.tokens.next() {
+			            if next_token == &Token::Comma {
+				            break;
+			            }
 
-			        radicand.push(next_token.to_owned());
+			            radicand.push(next_token.to_owned());
 			    }
-
 			    Ok(Expr::Function(
 			        id.to_string(),
 			        vec![Box::new(Parser::new(&radicand).parse()?), Box::new(self.paren()?)]
