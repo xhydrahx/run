@@ -1,4 +1,5 @@
 use super::types::{Expr, Operator, Token};
+use crate::engine::identifier;
 use std::{f64::consts, iter::Peekable, slice::Iter};
 
 pub struct Parser<'a> {
@@ -68,10 +69,6 @@ impl<'a> Parser<'a> {
 
     fn ident(&mut self, id: &str) -> Result<Expr, String> {
         match id {
-            "e" => self.num(consts::E),
-            "pi" => self.num(consts::PI),
-            "phi" => self.num((1.0 + 5.0_f64.sqrt()) / 2.0),
-
             "sqrt" => self.func(id),
             "ln" => self.func(id),
             "root" => self.func(id),
@@ -105,10 +102,31 @@ impl<'a> Parser<'a> {
             "acoth" => self.func(id),
             "asech" => self.func(id),
             "acsch" => self.func(id),
-            _ => Err(format!(
-                "Unknown identifier '{}' encountered: Expected a valid identifier.",
-                id
-            )),
+
+            _ => {
+                let mut variables = identifier::get_variables().write().unwrap();
+                for expr in variables.iter() {
+                    if let Expr::Variable(ident, value) = expr {
+                        if ident.as_str() == id {
+                            return Ok(Expr::Variable(ident.to_string(), value.to_owned()));
+                        }
+                    }
+                }
+
+                match self.tokens.peek() {
+                    Some(Token::Equal) => {
+                        self.tokens.next();
+                        variables.push(Expr::Variable(
+                            id.to_string(),
+                            Box::new(self.primary(Token::Equal.precedence() + 1)?),
+                        ));
+                        return Ok(Expr::Num(1.0));
+                    }
+                    _ => {
+                        return Ok(Expr::Num(0.0));
+                    }
+                }
+            }
         }
     }
 
@@ -278,6 +296,11 @@ impl<'a> Parser<'a> {
                     Box::new(Expr::Function(id.clone(), args.clone())),
                     Operator::Percent,
                     Box::new(Expr::Function(id, args)),
+                )),
+                Expr::Variable(_, value) => Ok(Expr::Binary(
+                    Box::new(Expr::Num(1.0)),
+                    Operator::Percent,
+                    value,
                 )),
             },
             token => Err(format!(
