@@ -93,6 +93,10 @@ impl<'a> Lexer<'a> {
                     tokens.push(Token::Bar);
                     self.expr.next();
                 }
+                '=' => {
+                    tokens.push(Token::Equal);
+                    self.expr.next();
+                }
                 ' ' | '\t' | '\n' => {
                     self.expr.next();
                 }

@@ -13,6 +13,7 @@ pub enum Token {
     Exclamation,
     Percent,
     Bar,
+    Equal,
 
     Comma,
     Underscore,
@@ -47,6 +48,7 @@ impl std::fmt::Display for Token {
             Token::Comma => ",",
             Token::Underscore => "_",
             Token::Bar => "|",
+            Token::Equal => "=",
         };
         write!(f, "{}", s)
     }
@@ -55,6 +57,7 @@ impl std::fmt::Display for Token {
 #[derive(Debug, Clone)]
 pub enum Expr {
     Num(f64),
+    Variable(String, Box<Expr>),
     Function(String, Vec<Box<Expr>>),
     Binary(Box<Expr>, Operator, Box<Expr>),
     Unary(Operator, Box<Expr>),
