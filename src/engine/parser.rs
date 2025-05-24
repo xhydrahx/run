@@ -182,6 +182,14 @@ impl<'a> Parser<'a> {
                     Box::new(self.paren()?),
                 ))
             }
+            Some(Token::Identifier(id)) => {
+                self.tokens.next();
+                Ok(Expr::Binary(
+                    Box::new(Expr::Num(num)),
+                    Operator::Multiplication,
+                    Box::new(self.ident(id)?),
+                ))
+            }
             _ => Ok(Expr::Num(num)),
         }
     }
