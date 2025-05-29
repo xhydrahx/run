@@ -1,14 +1,14 @@
 use super::types::Expr;
 use std::{
     f64::consts,
-    sync::{OnceLock, RwLock},
+    sync::{Mutex, OnceLock},
 };
 
-pub static VARIABLES: OnceLock<RwLock<Vec<Expr>>> = OnceLock::new();
+pub static VARIABLES: OnceLock<Mutex<Vec<Expr>>> = OnceLock::new();
 
-pub fn get_variables() -> &'static RwLock<Vec<Expr>> {
+pub fn get_variables() -> &'static Mutex<Vec<Expr>> {
     VARIABLES.get_or_init(|| {
-        RwLock::new(vec![
+        Mutex::new(vec![
             Expr::Variable("e".to_string(), Box::new(Expr::Num(consts::E))),
             Expr::Variable("pi".to_string(), Box::new(Expr::Num(consts::PI))),
             Expr::Variable(
