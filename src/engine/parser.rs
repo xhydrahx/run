@@ -104,31 +104,29 @@ impl<'a> Parser<'a> {
             "acsch" => self.func(id),
 
             _ => {
-                let mut variables = identifier::get_variables().write().unwrap();
-                for expr in variables.iter() {
-                    if let Expr::Variable(ident, value) = expr {
-                        if ident.as_str() == id {
-                            return Ok(Expr::Variable(ident.to_string(), value.to_owned()));
+                {
+                    let variables = identifier::get_variables().lock().unwrap();
+                    for expr in variables.iter() {
+                        if let Expr::Variable(ident, value) = expr {
+                            if ident.as_str() == id {
+                                return Ok(Expr::Variable(ident.to_string(), value.to_owned()));
+                            }
                         }
                     }
-                }
 
-                match self.tokens.peek() {
-                    Some(Token::Equal) => {
-                        self.tokens.next();
-                        variables.push(Expr::Variable(
-                            id.to_string(),
-                            Box::new(self.primary(Token::Equal.precedence() + 1)?),
-                        ));
-                        return Ok(Expr::Num(1.0));
-                    }
-                    _ => {
+                    if self.tokens.peek() != Some(&&Token::Equal) {
                         return Err(format!(
                             "Unexpected variable '{}': Expected a valid variable that has been defined",
                             id
                         ));
                     }
                 }
+
+                self.tokens.next();
+                let expr = self.primary(0)?;
+                let mut variables = identifier::get_variables().lock().unwrap();
+                variables.push(Expr::Variable(id.to_string(), Box::new(expr)));
+                return Ok(Expr::Num(1.0));
             }
         }
     }
