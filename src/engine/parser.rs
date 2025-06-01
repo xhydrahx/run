@@ -61,10 +61,24 @@ impl<'a> Parser<'a> {
             expr.push(token.to_owned());
         }
 
-        Ok(Expr::Unary(
-            Operator::Absolute,
-            Box::new(Parser::new(&expr).parse()?),
-        ))
+        match self.tokens.peek() {
+            Some(Token::Num(n)) => {
+                self.tokens.next();
+
+                Ok(Expr::Binary(
+                    Box::new(Expr::Unary(
+                        Operator::Absolute,
+                        Box::new(Parser::new(&expr).parse()?),
+                    )),
+                    Operator::Multiplication,
+                    Box::new(Expr::Num(*n)),
+                ))
+            }
+            _ => Ok(Expr::Unary(
+                Operator::Absolute,
+                Box::new(Parser::new(&expr).parse()?),
+            )),
+        }
     }
 
     fn ident(&mut self, id: &str) -> Result<Expr, String> {
