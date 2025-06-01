@@ -68,76 +68,66 @@ impl<'a> Parser<'a> {
     }
 
     fn ident(&mut self, id: &str) -> Result<Expr, String> {
-        match self.tokens.peek() {
-            Some(Token::Num(n)) => {
-                self.tokens.next();
-                Ok(Expr::Binary(
-                    Box::new(self.ident(id)?),
-                    Operator::Exponent,
-                    Box::new(Expr::Num(*n)),
-                ))
-            }
-            _ => match id {
-                "sqrt" => self.func(id),
-                "ln" => self.func(id),
-                "root" => self.func(id),
-                "log" => self.func(id),
-                "cbrt" => self.func(id),
+        match id {
+            "sqrt" => self.func(id),
+            "ln" => self.func(id),
+            "root" => self.func(id),
+            "log" => self.func(id),
+            "cbrt" => self.func(id),
 
-                "sin" => self.func(id),
-                "cos" => self.func(id),
-                "tan" => self.func(id),
-                "cot" => self.func(id),
-                "sec" => self.func(id),
-                "csc" => self.func(id),
+            "sin" => self.func(id),
+            "cos" => self.func(id),
+            "tan" => self.func(id),
+            "cot" => self.func(id),
+            "sec" => self.func(id),
+            "csc" => self.func(id),
 
-                "asin" => self.func(id),
-                "acos" => self.func(id),
-                "atan" => self.func(id),
-                "acot" => self.func(id),
-                "asec" => self.func(id),
-                "acsc" => self.func(id),
+            "asin" => self.func(id),
+            "acos" => self.func(id),
+            "atan" => self.func(id),
+            "acot" => self.func(id),
+            "asec" => self.func(id),
+            "acsc" => self.func(id),
 
-                "sinh" => self.func(id),
-                "cosh" => self.func(id),
-                "tanh" => self.func(id),
-                "coth" => self.func(id),
-                "sech" => self.func(id),
-                "csch" => self.func(id),
+            "sinh" => self.func(id),
+            "cosh" => self.func(id),
+            "tanh" => self.func(id),
+            "coth" => self.func(id),
+            "sech" => self.func(id),
+            "csch" => self.func(id),
 
-                "asinh" => self.func(id),
-                "acosh" => self.func(id),
-                "atanh" => self.func(id),
-                "acoth" => self.func(id),
-                "asech" => self.func(id),
-                "acsch" => self.func(id),
+            "asinh" => self.func(id),
+            "acosh" => self.func(id),
+            "atanh" => self.func(id),
+            "acoth" => self.func(id),
+            "asech" => self.func(id),
+            "acsch" => self.func(id),
 
-                _ => {
-                    {
-                        let variables = identifier::get_variables().lock().unwrap();
-                        for expr in variables.iter() {
-                            if let Expr::Variable(ident, value) = expr {
-                                if ident.as_str() == id {
-                                    return Ok(Expr::Variable(ident.to_string(), value.to_owned()));
-                                }
+            _ => {
+                {
+                    let variables = identifier::get_variables().lock().unwrap();
+                    for expr in variables.iter() {
+                        if let Expr::Variable(ident, value) = expr {
+                            if ident.as_str() == id {
+                                return Ok(Expr::Variable(ident.to_string(), value.to_owned()));
                             }
-                        }
-
-                        if self.tokens.peek() != Some(&&Token::Equal) {
-                            return Err(format!(
-                                "Unexpected variable '{}': Expected a valid variable that has been defined",
-                                id
-                            ));
                         }
                     }
 
-                    self.tokens.next();
-                    let expr = self.primary(0)?;
-                    let mut variables = identifier::get_variables().lock().unwrap();
-                    variables.push(Expr::Variable(id.to_string(), Box::new(expr)));
-                    return Ok(Expr::Num(1.0));
+                    if self.tokens.peek() != Some(&&Token::Equal) {
+                        return Err(format!(
+                            "Unexpected variable '{}': Expected a valid variable that has been defined",
+                            id
+                        ));
+                    }
                 }
-            },
+
+                self.tokens.next();
+                let expr = self.primary(0)?;
+                let mut variables = identifier::get_variables().lock().unwrap();
+                variables.push(Expr::Variable(id.to_string(), Box::new(expr)));
+                return Ok(Expr::Num(1.0));
+            }
         }
     }
 
