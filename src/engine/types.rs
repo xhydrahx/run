@@ -73,4 +73,5 @@ pub enum Operator {
     Factorial(i8),
     Percent,
     Absolute,
+    Equal
 }

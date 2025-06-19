@@ -325,6 +325,14 @@ impl<'a> Parser<'a> {
                     value,
                 )),
             },
+            Token::Equal => {
+                let right = self.primary(0)?;
+                Ok(Expr::Binary(
+                    Box::new(left),
+                    Operator::Equal,
+                    Box::new(right),
+                ))
+            }
             token => Err(format!(
                 "Unknown operator '{}': Expected one of: '+', '-', '*', '/', '^', etc.",
                 token

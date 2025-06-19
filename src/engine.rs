@@ -1,7 +1,7 @@
+mod identifier;
 mod lexer;
 mod parser;
 mod types;
-mod identifier;
 
 use super::engine::{
     lexer::Lexer,
@@ -73,6 +73,13 @@ fn calculate(expr: Expr) -> f64 {
                 Operator::Division => l / r,
                 Operator::Exponent => l.powf(r),
                 Operator::Percent => l * r / 100.0,
+                Operator::Equal => {
+                    if l == r {
+                        0.0
+                    } else {
+                        1.0
+                    }
+                }
                 _ => unreachable!(),
             }
         }
@@ -109,8 +116,6 @@ fn calculate(expr: Expr) -> f64 {
                 _ => unreachable!(),
             }
         }
-        Expr::Variable(_id, value) => {
-            calculate(*value)
-        }
+        Expr::Variable(_id, value) => calculate(*value),
     }
 }
