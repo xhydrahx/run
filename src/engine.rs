@@ -75,9 +75,9 @@ fn calculate(expr: Expr) -> f64 {
                 Operator::Percent => l * r / 100.0,
                 Operator::Equal => {
                     if l == r {
-                        0.0
-                    } else {
                         1.0
+                    } else {
+                        0.0
                     }
                 }
                 _ => unreachable!(),
