@@ -130,7 +130,7 @@ impl<'a> Parser<'a> {
 
                     if self.tokens.peek() != Some(&&Token::Equal) {
                         return Err(format!(
-                            "Unexpected variable '{}': Expected a valid variable that has been defined",
+                            "Unknown variable '{}': Expected a valid variable that has been defined",
                             id
                         ));
                     }
@@ -334,7 +334,7 @@ impl<'a> Parser<'a> {
                 ))
             }
             token => Err(format!(
-                "Unknown operator '{}': Expected one of: '+', '-', '*', '/', '^', etc.",
+                "Unknown operator '{}': Expected a valid known operator",
                 token
             )),
         }
