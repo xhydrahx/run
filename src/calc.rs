@@ -14,7 +14,7 @@ pub fn run() {
             .expect("Did not enter a string");
 
         match engine::expr(input.trim()) {
-            Ok(n) => println!(" {}", n),
+            Ok(n) => println!("=> {}", n),
             Err(e) => eprintln!("=> {}", e),
         }
     }
