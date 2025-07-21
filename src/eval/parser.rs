@@ -4,6 +4,7 @@ use crate::eval::{
 use std::{iter::Peekable, slice::Iter};
 
 pub mod identifier;
+pub mod group;
 
 pub fn parse(tokens: Vec<Token>) -> Result<Expr, String> {
     primary(&mut tokens.iter().peekable(), 0)
@@ -25,46 +26,22 @@ pub fn primary(tokens: &mut Peekable<Iter<Token>>, precedence: u8) -> Result<Exp
 fn prefix(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
     match tokens.next() {
             Some(Token::Num(n)) => num(tokens, *n),
-            Some(Token::LeftParen) => Ok(paren(tokens)?),
+            Some(Token::LeftParen) => Ok(group::paren(tokens)?),
             Some(Token::Minus) => match tokens.next() {
                 Some(Token::Num(n)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(num(tokens, *n)?))),
-                Some(Token::LeftParen) => Ok(Expr::Unary(Operator::Subtraction, Box::new(paren(tokens)?))),
+                Some(Token::LeftParen) => Ok(Expr::Unary(Operator::Subtraction, Box::new(group::paren(tokens)?))),
                 Some(Token::Identifier(id)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(identifier::ident(tokens, id)?))),
                 Some(token) => Err(format!("Unexpected token '{}' after unary '-': Expected a number, an opening parenthesis '(', or a valid unary expression.", token)),
                 None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
             },
             Some(Token::Identifier(id)) => identifier::ident(tokens, id),
-            Some(Token::Bar) => absolute(tokens),
+            Some(Token::Bar) => group::absolute(tokens),
             Some(token) => Err(format!(
                 "Unexpected token '{}' encountered: Expected a number, an opening parenthesis '(', or a unary operator.",
                 token
             )),
             None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
         }
-}
-
-fn absolute(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
-    let mut expr = Vec::new();
-    while let Some(token) = tokens.next() {
-        if token == &Token::Bar {
-            break;
-        }
-
-        expr.push(token.to_owned());
-    }
-
-    match tokens.peek() {
-        Some(Token::Num(n)) => {
-            tokens.next();
-
-            Ok(Expr::Binary(
-                Box::new(Expr::Unary(Operator::Absolute, Box::new(parse(expr)?))),
-                Operator::Multiplication,
-                Box::new(Expr::Num(*n)),
-            ))
-        }
-        _ => Ok(Expr::Unary(Operator::Absolute, Box::new(parse(expr)?))),
-    }
 }
 
 fn num(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, String> {
@@ -74,7 +51,7 @@ fn num(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, String> {
             Ok(Expr::Binary(
                 Box::new(Expr::Num(num)),
                 Operator::Multiplication,
-                Box::new(paren(tokens)?),
+                Box::new(group::paren(tokens)?),
             ))
         }
         Some(Token::Identifier(id)) => {
@@ -87,37 +64,6 @@ fn num(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, String> {
         }
         _ => Ok(Expr::Num(num)),
     }
-}
-
-fn paren(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
-    let mut inside = Vec::new();
-    let mut depth = 1;
-
-    while let Some(token) = tokens.next() {
-        match token {
-            Token::LeftParen => {
-                depth += 1;
-                inside.push(token.to_owned());
-            }
-            Token::RightParen => {
-                depth -= 1;
-                if depth == 0 {
-                    break;
-                }
-                inside.push(token.to_owned());
-            }
-            _ => inside.push(token.to_owned()),
-        }
-    }
-
-    if depth != 0 {
-        return Err(format!(
-            "Unclosed parenthesis: {} unmatched '('. Expected {} closing ')' before end of expression.",
-            depth, depth
-        ));
-    }
-
-    parse(inside)
 }
 
 fn infix(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, String> {
@@ -180,7 +126,7 @@ fn infix(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, String>
         Token::LeftParen => Ok(Expr::Binary(
             Box::new(left),
             Operator::Multiplication,
-            Box::new(paren(tokens)?),
+            Box::new(group::paren(tokens)?),
         )),
         Token::Percent => match left {
             Expr::Num(n) => Ok(Expr::Binary(

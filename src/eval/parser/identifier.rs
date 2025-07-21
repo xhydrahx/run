@@ -1,7 +1,7 @@
 use std::{iter::Peekable, slice::Iter};
 
 use crate::eval::{
-    parser,
+    parser::{self, group},
     types::{Expr, Token},
     variables,
 };
@@ -86,17 +86,17 @@ fn func(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, String> {
                     id.to_string(),
                     vec![
                         Box::new(parser::parse(radicand)?),
-                        Box::new(parser::paren(tokens)?),
+                        Box::new(group::paren(tokens)?),
                     ],
                 ))
             }
             "log" => Ok(Expr::Function(
                 id.to_string(),
-                vec![Box::new(Expr::Num(10.0)), Box::new(parser::paren(tokens)?)],
+                vec![Box::new(Expr::Num(10.0)), Box::new(group::paren(tokens)?)],
             )),
             _ => Ok(Expr::Function(
                 id.to_string(),
-                vec![Box::new(parser::paren(tokens)?)],
+                vec![Box::new(group::paren(tokens)?)],
             )),
         },
         Some(Token::Underscore) => {
@@ -113,7 +113,7 @@ fn func(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, String> {
                 id.to_string(),
                 vec![
                     Box::new(parser::parse(base)?),
-                    Box::new(parser::paren(tokens)?),
+                    Box::new(group::paren(tokens)?),
                 ],
             ))
         }
