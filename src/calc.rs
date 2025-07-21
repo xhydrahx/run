@@ -1,4 +1,4 @@
-use crate::engine;
+use crate::eval;
 use std::io::{Write, stdin, stdout};
 
 pub fn run() {
@@ -13,7 +13,7 @@ pub fn run() {
             .read_line(&mut input)
             .expect("Did not enter a string");
 
-        match engine::expr(input.trim()) {
+        match eval::expr(input.trim()) {
             Ok(n) => println!("=> {}", n),
             Err(e) => eprintln!("=> {}", e),
         }
