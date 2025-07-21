@@ -1,5 +1,7 @@
-use super::types::{Expr, Operator, Token};
-use crate::eval::identifier;
+use crate::eval::{
+    identifier,
+    types::{Expr, Operator, Token},
+};
 use std::{iter::Peekable, slice::Iter};
 
 pub struct Parser<'a> {
