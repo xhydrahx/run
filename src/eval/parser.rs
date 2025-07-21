@@ -1,5 +1,5 @@
 use crate::eval::{
-    identifier,
+    variables,
     types::{Expr, Operator, Token},
 };
 use std::{iter::Peekable, slice::Iter};
@@ -121,7 +121,7 @@ impl<'a> Parser<'a> {
 
             _ => {
                 {
-                    let variables = identifier::get_variables().lock().unwrap();
+                    let variables = variables::get_variables().lock().unwrap();
                     for expr in variables.iter() {
                         if let Expr::Variable(ident, value) = expr {
                             if ident.as_str() == id {
@@ -140,7 +140,7 @@ impl<'a> Parser<'a> {
 
                 self.tokens.next();
                 let expr = self.primary(0)?;
-                let mut variables = identifier::get_variables().lock().unwrap();
+                let mut variables = variables::get_variables().lock().unwrap();
                 variables.push(Expr::Variable(id.to_string(), Box::new(expr)));
                 return Ok(Expr::Num(1.0));
             }
