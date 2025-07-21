@@ -1,4 +1,4 @@
-use super::types::Expr;
+use crate::eval::types::Expr;
 use std::{
     f64::consts,
     sync::{Mutex, OnceLock},
@@ -18,3 +18,4 @@ pub fn get_variables() -> &'static Mutex<Vec<Expr>> {
         ])
     })
 }
+

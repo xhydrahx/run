@@ -1,4 +1,4 @@
-use super::types::Token;
+use crate::eval::types::Token;
 use std::{iter::Peekable, str::Chars};
 
 pub struct Lexer<'a> {
