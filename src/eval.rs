@@ -1,5 +1,5 @@
 pub mod executor;
-pub mod identifier;
+pub mod variables;
 pub mod lexer;
 pub mod parser;
 pub mod types;
