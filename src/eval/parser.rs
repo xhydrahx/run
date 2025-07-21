@@ -1,344 +1,224 @@
 use crate::eval::{
-    variables,
     types::{Expr, Operator, Token},
 };
 use std::{iter::Peekable, slice::Iter};
 
-pub struct Parser<'a> {
-    tokens: Peekable<Iter<'a, Token>>,
+pub mod identifier;
+
+pub fn parse(tokens: Vec<Token>) -> Result<Expr, String> {
+    primary(&mut tokens.iter().peekable(), 0)
 }
 
-impl<'a> Parser<'a> {
-    pub fn new(tokens: &'a [Token]) -> Self {
-        Parser {
-            tokens: tokens.iter().peekable(),
+pub fn primary(tokens: &mut Peekable<Iter<Token>>, precedence: u8) -> Result<Expr, String> {
+    let mut left = prefix(tokens)?;
+
+    while let Some(&token) = tokens.peek() {
+        if token.precedence() < precedence {
+            break;
         }
+        left = infix(tokens, left)?;
     }
 
-    pub fn parse(&mut self) -> Result<Expr, String> {
-        self.primary(0)
-    }
+    Ok(left)
+}
 
-    fn primary(&mut self, precedence: u8) -> Result<Expr, String> {
-        let mut left = self.prefix()?;
-
-        while let Some(&token) = self.tokens.peek() {
-            if token.precedence() < precedence {
-                break;
-            }
-            left = self.infix(left)?;
-        }
-
-        Ok(left)
-    }
-
-    fn prefix(&mut self) -> Result<Expr, String> {
-        match self.tokens.next() {
-            Some(Token::Num(n)) => self.num(*n),
-            Some(Token::LeftParen) => Ok(self.paren()?),
-            Some(Token::Minus) => match self.tokens.next() {
-                Some(Token::Num(n)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.num(*n)?))),
-                Some(Token::LeftParen) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.paren()?))),
-                Some(Token::Identifier(id)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(self.ident(id)?))),
+fn prefix(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
+    match tokens.next() {
+            Some(Token::Num(n)) => num(tokens, *n),
+            Some(Token::LeftParen) => Ok(paren(tokens)?),
+            Some(Token::Minus) => match tokens.next() {
+                Some(Token::Num(n)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(num(tokens, *n)?))),
+                Some(Token::LeftParen) => Ok(Expr::Unary(Operator::Subtraction, Box::new(paren(tokens)?))),
+                Some(Token::Identifier(id)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(identifier::ident(tokens, id)?))),
                 Some(token) => Err(format!("Unexpected token '{}' after unary '-': Expected a number, an opening parenthesis '(', or a valid unary expression.", token)),
                 None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
             },
-            Some(Token::Identifier(id)) => self.ident(id),
-            Some(Token::Bar) => self.absolute(),
+            Some(Token::Identifier(id)) => identifier::ident(tokens, id),
+            Some(Token::Bar) => absolute(tokens),
             Some(token) => Err(format!(
                 "Unexpected token '{}' encountered: Expected a number, an opening parenthesis '(', or a unary operator.",
                 token
             )),
             None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
         }
-    }
+}
 
-    fn absolute(&mut self) -> Result<Expr, String> {
-        let mut expr = Vec::new();
-        while let Some(token) = self.tokens.next() {
-            if token == &Token::Bar {
-                break;
-            }
-
-            expr.push(token.to_owned());
+fn absolute(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
+    let mut expr = Vec::new();
+    while let Some(token) = tokens.next() {
+        if token == &Token::Bar {
+            break;
         }
 
-        match self.tokens.peek() {
-            Some(Token::Num(n)) => {
-                self.tokens.next();
-
-                Ok(Expr::Binary(
-                    Box::new(Expr::Unary(
-                        Operator::Absolute,
-                        Box::new(Parser::new(&expr).parse()?),
-                    )),
-                    Operator::Multiplication,
-                    Box::new(Expr::Num(*n)),
-                ))
-            }
-            _ => Ok(Expr::Unary(
-                Operator::Absolute,
-                Box::new(Parser::new(&expr).parse()?),
-            )),
-        }
+        expr.push(token.to_owned());
     }
 
-    fn ident(&mut self, id: &str) -> Result<Expr, String> {
-        match id {
-            "sqrt" => self.func(id),
-            "ln" => self.func(id),
-            "root" => self.func(id),
-            "log" => self.func(id),
-            "cbrt" => self.func(id),
+    match tokens.peek() {
+        Some(Token::Num(n)) => {
+            tokens.next();
 
-            "sin" => self.func(id),
-            "cos" => self.func(id),
-            "tan" => self.func(id),
-            "cot" => self.func(id),
-            "sec" => self.func(id),
-            "csc" => self.func(id),
-
-            "asin" => self.func(id),
-            "acos" => self.func(id),
-            "atan" => self.func(id),
-            "acot" => self.func(id),
-            "asec" => self.func(id),
-            "acsc" => self.func(id),
-
-            "sinh" => self.func(id),
-            "cosh" => self.func(id),
-            "tanh" => self.func(id),
-            "coth" => self.func(id),
-            "sech" => self.func(id),
-            "csch" => self.func(id),
-
-            "asinh" => self.func(id),
-            "acosh" => self.func(id),
-            "atanh" => self.func(id),
-            "acoth" => self.func(id),
-            "asech" => self.func(id),
-            "acsch" => self.func(id),
-
-            _ => {
-                {
-                    let variables = variables::get_variables().lock().unwrap();
-                    for expr in variables.iter() {
-                        if let Expr::Variable(ident, value) = expr {
-                            if ident.as_str() == id {
-                                return Ok(Expr::Variable(ident.to_string(), value.to_owned()));
-                            }
-                        }
-                    }
-
-                    if self.tokens.peek() != Some(&&Token::Equal) {
-                        return Err(format!(
-                            "Unknown variable '{}': Expected a valid variable that has been defined",
-                            id
-                        ));
-                    }
-                }
-
-                self.tokens.next();
-                let expr = self.primary(0)?;
-                let mut variables = variables::get_variables().lock().unwrap();
-                variables.push(Expr::Variable(id.to_string(), Box::new(expr)));
-                return Ok(Expr::Num(1.0));
-            }
+            Ok(Expr::Binary(
+                Box::new(Expr::Unary(Operator::Absolute, Box::new(parse(expr)?))),
+                Operator::Multiplication,
+                Box::new(Expr::Num(*n)),
+            ))
         }
+        _ => Ok(Expr::Unary(Operator::Absolute, Box::new(parse(expr)?))),
     }
+}
 
-    fn func(&mut self, id: &str) -> Result<Expr, String> {
-        match self.tokens.next() {
-	    Some(Token::LeftParen) => {
-		    match id {
-		        "root" => {
-			        let mut radicand = Vec::new();
-			        while let Some(next_token) = self.tokens.next() {
-			            if next_token == &Token::Comma {
-				            break;
-			            }
-
-			            radicand.push(next_token.to_owned());
-			    }
-			    Ok(Expr::Function(
-			        id.to_string(),
-			        vec![Box::new(Parser::new(&radicand).parse()?), Box::new(self.paren()?)]
-		        ))
-		    }
-		    "log" => Ok(Expr::Function(id.to_string(), vec![Box::new(Expr::Num(10.0)), Box::new(self.paren()?)])),
-		    _ => Ok(Expr::Function(id.to_string(), vec![Box::new(self.paren()?)]))
-		}
-	    }
-	    Some(Token::Underscore) => {
-		    let mut base = Vec::new();
-		    while let Some(next_token) = self.tokens.next() {
-		        if next_token == &Token::LeftParen {
-			        break;
-		        }
-
-		        base.push(next_token.to_owned());
-		    }
-
-            Ok(Expr::Function(id.to_string(), vec![Box::new(Parser::new(&base).parse()?), Box::new(self.paren()?)]))
-	    }
-	    None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end".into()),
-	    token => Err(format!("Unexpected '{}': Expected parenthesis after '{}'", token.unwrap(), id)),
-	}
-    }
-
-    fn num(&mut self, num: f64) -> Result<Expr, String> {
-        match self.tokens.peek() {
-            Some(Token::LeftParen) => {
-                self.tokens.next();
-                Ok(Expr::Binary(
-                    Box::new(Expr::Num(num)),
-                    Operator::Multiplication,
-                    Box::new(self.paren()?),
-                ))
-            }
-            Some(Token::Identifier(id)) => {
-                self.tokens.next();
-                Ok(Expr::Binary(
-                    Box::new(Expr::Num(num)),
-                    Operator::Multiplication,
-                    Box::new(self.ident(id)?),
-                ))
-            }
-            _ => Ok(Expr::Num(num)),
+fn num(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, String> {
+    match tokens.peek() {
+        Some(Token::LeftParen) => {
+            tokens.next();
+            Ok(Expr::Binary(
+                Box::new(Expr::Num(num)),
+                Operator::Multiplication,
+                Box::new(paren(tokens)?),
+            ))
         }
-    }
-
-    fn paren(&mut self) -> Result<Expr, String> {
-        let mut tokens = Vec::new();
-        let mut depth = 1;
-
-        while let Some(token) = self.tokens.next() {
-            match token {
-                Token::LeftParen => {
-                    depth += 1;
-                    tokens.push(token.to_owned());
-                }
-                Token::RightParen => {
-                    depth -= 1;
-                    if depth == 0 {
-                        break;
-                    }
-                    tokens.push(token.to_owned());
-                }
-                _ => tokens.push(token.to_owned()),
-            }
+        Some(Token::Identifier(id)) => {
+            tokens.next();
+            Ok(Expr::Binary(
+                Box::new(Expr::Num(num)),
+                Operator::Multiplication,
+                Box::new(identifier::ident(tokens, id)?),
+            ))
         }
-
-        if depth != 0 {
-            return Err(format!(
-                "Unclosed parenthesis: {} unmatched '('. Expected {} closing ')' before end of expression.",
-                depth, depth
-            ));
-        }
-
-        Parser::new(tokens.as_slice()).parse()
+        _ => Ok(Expr::Num(num)),
     }
+}
 
-    fn infix(&mut self, left: Expr) -> Result<Expr, String> {
-        let token = self.tokens.next().unwrap();
+fn paren(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
+    let mut inside = Vec::new();
+    let mut depth = 1;
+
+    while let Some(token) = tokens.next() {
         match token {
-            Token::Plus => {
-                let right = self.primary(token.precedence() + 1)?;
-                Ok(Expr::Binary(
-                    Box::new(left),
-                    Operator::Addition,
-                    Box::new(right),
-                ))
+            Token::LeftParen => {
+                depth += 1;
+                inside.push(token.to_owned());
             }
-            Token::Minus => {
-                let right = self.primary(token.precedence() + 1)?;
-                Ok(Expr::Binary(
-                    Box::new(left),
-                    Operator::Subtraction,
-                    Box::new(right),
-                ))
-            }
-            Token::Star => {
-                let right = self.primary(token.precedence() + 1)?;
-                Ok(Expr::Binary(
-                    Box::new(left),
-                    Operator::Multiplication,
-                    Box::new(right),
-                ))
-            }
-            Token::Slash => {
-                let right = self.primary(token.precedence() + 1)?;
-                Ok(Expr::Binary(
-                    Box::new(left),
-                    Operator::Division,
-                    Box::new(right),
-                ))
-            }
-            Token::Carrot => {
-                let right = self.primary(token.precedence())?;
-                Ok(Expr::Binary(
-                    Box::new(left),
-                    Operator::Exponent,
-                    Box::new(right),
-                ))
-            }
-            Token::Exclamation => {
-                let mut amount: i8 = 1;
-                while let Some(token) = self.tokens.peek() {
-                    match token {
-                        Token::Exclamation => {
-                            self.tokens.next();
-                            amount += 1;
-                        }
-                        _ => break,
-                    }
+            Token::RightParen => {
+                depth -= 1;
+                if depth == 0 {
+                    break;
                 }
-
-                Ok(Expr::Unary(Operator::Factorial(amount), Box::new(left)))
+                inside.push(token.to_owned());
             }
-            Token::LeftParen => Ok(Expr::Binary(
+            _ => inside.push(token.to_owned()),
+        }
+    }
+
+    if depth != 0 {
+        return Err(format!(
+            "Unclosed parenthesis: {} unmatched '('. Expected {} closing ')' before end of expression.",
+            depth, depth
+        ));
+    }
+
+    parse(inside)
+}
+
+fn infix(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, String> {
+    let token = tokens.next().unwrap();
+    match token {
+        Token::Plus => {
+            let right = primary(tokens, token.precedence() + 1)?;
+            Ok(Expr::Binary(
+                Box::new(left),
+                Operator::Addition,
+                Box::new(right),
+            ))
+        }
+        Token::Minus => {
+            let right = primary(tokens, token.precedence() + 1)?;
+            Ok(Expr::Binary(
+                Box::new(left),
+                Operator::Subtraction,
+                Box::new(right),
+            ))
+        }
+        Token::Star => {
+            let right = primary(tokens, token.precedence() + 1)?;
+            Ok(Expr::Binary(
                 Box::new(left),
                 Operator::Multiplication,
-                Box::new(self.paren()?),
-            )),
-            Token::Percent => match left {
-                Expr::Num(n) => Ok(Expr::Binary(
-                    Box::new(Expr::Num(1.0)),
-                    Operator::Percent,
-                    Box::new(Expr::Num(n)),
-                )),
-                Expr::Binary(l, op, r) => Ok(Expr::Binary(
-                    l.clone(),
-                    op,
-                    Box::new(Expr::Binary(l, Operator::Percent, r)),
-                )),
-                Expr::Unary(op, r) => Ok(Expr::Unary(
-                    op,
-                    Box::new(Expr::Binary(r.clone(), Operator::Percent, r)),
-                )),
-                Expr::Function(id, args) => Ok(Expr::Binary(
-                    Box::new(Expr::Function(id.clone(), args.clone())),
-                    Operator::Percent,
-                    Box::new(Expr::Function(id, args)),
-                )),
-                Expr::Variable(_, value) => Ok(Expr::Binary(
-                    Box::new(Expr::Num(1.0)),
-                    Operator::Percent,
-                    value,
-                )),
-            },
-            Token::Equal => {
-                let right = self.primary(0)?;
-                Ok(Expr::Binary(
-                    Box::new(left),
-                    Operator::Equal,
-                    Box::new(right),
-                ))
-            }
-            token => Err(format!(
-                "Unknown operator '{}': Expected a valid known operator",
-                token
-            )),
+                Box::new(right),
+            ))
         }
+        Token::Slash => {
+            let right = primary(tokens, token.precedence() + 1)?;
+            Ok(Expr::Binary(
+                Box::new(left),
+                Operator::Division,
+                Box::new(right),
+            ))
+        }
+        Token::Carrot => {
+            let right = primary(tokens, token.precedence())?;
+            Ok(Expr::Binary(
+                Box::new(left),
+                Operator::Exponent,
+                Box::new(right),
+            ))
+        }
+        Token::Exclamation => {
+            let mut amount: i8 = 1;
+            while let Some(token) = tokens.peek() {
+                match token {
+                    Token::Exclamation => {
+                        tokens.next();
+                        amount += 1;
+                    }
+                    _ => break,
+                }
+            }
+
+            Ok(Expr::Unary(Operator::Factorial(amount), Box::new(left)))
+        }
+        Token::LeftParen => Ok(Expr::Binary(
+            Box::new(left),
+            Operator::Multiplication,
+            Box::new(paren(tokens)?),
+        )),
+        Token::Percent => match left {
+            Expr::Num(n) => Ok(Expr::Binary(
+                Box::new(Expr::Num(1.0)),
+                Operator::Percent,
+                Box::new(Expr::Num(n)),
+            )),
+            Expr::Binary(l, op, r) => Ok(Expr::Binary(
+                l.clone(),
+                op,
+                Box::new(Expr::Binary(l, Operator::Percent, r)),
+            )),
+            Expr::Unary(op, r) => Ok(Expr::Unary(
+                op,
+                Box::new(Expr::Binary(r.clone(), Operator::Percent, r)),
+            )),
+            Expr::Function(id, args) => Ok(Expr::Binary(
+                Box::new(Expr::Function(id.clone(), args.clone())),
+                Operator::Percent,
+                Box::new(Expr::Function(id, args)),
+            )),
+            Expr::Variable(_, value) => Ok(Expr::Binary(
+                Box::new(Expr::Num(1.0)),
+                Operator::Percent,
+                value,
+            )),
+        },
+        Token::Equal => {
+            let right = primary(tokens, 0)?;
+            Ok(Expr::Binary(
+                Box::new(left),
+                Operator::Equal,
+                Box::new(right),
+            ))
+        }
+        token => Err(format!(
+            "Unknown operator '{}': Expected a valid known operator",
+            token
+        )),
     }
 }

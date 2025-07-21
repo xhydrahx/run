@@ -6,6 +6,6 @@ pub mod types;
 
 pub fn evaluate(expr: &str) -> Result<f64, String> {
     Ok(executor::calculate(
-        parser::Parser::new(&lexer::lex(&mut expr.chars().peekable())?).parse()?,
+        parser::parse(lexer::lex(&mut expr.chars().peekable())?)?,
     ))
 }
