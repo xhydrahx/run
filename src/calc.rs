@@ -13,7 +13,7 @@ pub fn run() {
             .read_line(&mut input)
             .expect("Did not enter a string");
 
-        match eval::expr(input.trim()) {
+        match eval::evaluate(input.trim()) {
             Ok(n) => println!("=> {}", n),
             Err(e) => eprintln!("=> {}", e),
         }
