@@ -5,7 +5,7 @@ use crate::eval::{
     types::{Expr, Operator, Token},
 };
 
-pub fn num(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, String> {
+pub fn parse(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, String> {
     match tokens.peek() {
         Some(Token::LeftParen) => {
             tokens.next();
@@ -20,7 +20,7 @@ pub fn num(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, String>
             Ok(Expr::Binary(
                 Box::new(Expr::Num(num)),
                 Operator::Multiplication,
-                Box::new(identifier::ident(tokens, id)?),
+                Box::new(identifier::parse(tokens, id)?),
             ))
         }
         _ => Ok(Expr::Num(num)),
