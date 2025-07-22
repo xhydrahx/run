@@ -7,6 +7,7 @@ pub mod identifier;
 pub mod delimeter;
 pub mod number;
 pub mod prefix;
+pub mod function;
 
 pub fn parse(tokens: Vec<Token>) -> Result<Expr, String> {
     primary(&mut tokens.iter().peekable(), 0)
