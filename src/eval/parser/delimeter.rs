@@ -1,30 +1,6 @@
 use std::{iter::Peekable, slice::Iter};
 
-use crate::eval::{types::{Expr, Operator, Token}, parser};
-
-pub fn absolute(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
-    let mut expr = Vec::new();
-    while let Some(token) = tokens.next() {
-        if token == &Token::Bar {
-            break;
-        }
-
-        expr.push(token.to_owned());
-    }
-
-    match tokens.peek() {
-        Some(Token::Num(n)) => {
-            tokens.next();
-
-            Ok(Expr::Binary(
-                Box::new(Expr::Unary(Operator::Absolute, Box::new(parser::parse(expr)?))),
-                Operator::Multiplication,
-                Box::new(Expr::Num(*n)),
-            ))
-        }
-        _ => Ok(Expr::Unary(Operator::Absolute, Box::new(parser::parse(expr)?))),
-    }
-}
+use crate::eval::{types::{Expr, Token}, parser};
 
 pub fn paren(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
     let mut inside = Vec::new();

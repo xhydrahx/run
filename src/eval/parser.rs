@@ -4,7 +4,7 @@ use crate::eval::{
 use std::{iter::Peekable, slice::Iter};
 
 pub mod identifier;
-pub mod group;
+pub mod delimeter;
 pub mod number;
 pub mod prefix;
 
@@ -85,7 +85,7 @@ fn infix(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, String>
         Token::LeftParen => Ok(Expr::Binary(
             Box::new(left),
             Operator::Multiplication,
-            Box::new(group::paren(tokens)?),
+            Box::new(delimeter::paren(tokens)?),
         )),
         Token::Percent => match left {
             Expr::Num(n) => Ok(Expr::Binary(

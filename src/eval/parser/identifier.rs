@@ -1,8 +1,8 @@
 use std::{iter::Peekable, slice::Iter};
 
 use crate::eval::{
-    parser::{self, group},
-    types::{Expr, Token},
+    parser::{self, delimeter},
+    types::{Expr, Operator, Token},
     variables,
 };
 
@@ -86,17 +86,17 @@ fn func(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, String> {
                     id.to_string(),
                     vec![
                         Box::new(parser::parse(radicand)?),
-                        Box::new(group::paren(tokens)?),
+                        Box::new(delimeter::paren(tokens)?),
                     ],
                 ))
             }
             "log" => Ok(Expr::Function(
                 id.to_string(),
-                vec![Box::new(Expr::Num(10.0)), Box::new(group::paren(tokens)?)],
+                vec![Box::new(Expr::Num(10.0)), Box::new(delimeter::paren(tokens)?)],
             )),
             _ => Ok(Expr::Function(
                 id.to_string(),
-                vec![Box::new(group::paren(tokens)?)],
+                vec![Box::new(delimeter::paren(tokens)?)],
             )),
         },
         Some(Token::Underscore) => {
@@ -113,7 +113,7 @@ fn func(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, String> {
                 id.to_string(),
                 vec![
                     Box::new(parser::parse(base)?),
-                    Box::new(group::paren(tokens)?),
+                    Box::new(delimeter::paren(tokens)?),
                 ],
             ))
         }
@@ -128,3 +128,29 @@ fn func(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, String> {
         )),
     }
 }
+
+pub fn absolute(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
+    let mut expr = Vec::new();
+    while let Some(token) = tokens.next() {
+        if token == &Token::Bar {
+            break;
+        }
+
+        expr.push(token.to_owned());
+    }
+
+    match tokens.peek() {
+        Some(Token::Num(n)) => {
+            tokens.next();
+
+            Ok(Expr::Binary(
+                Box::new(Expr::Unary(Operator::Absolute, Box::new(parser::parse(expr)?))),
+                Operator::Multiplication,
+                Box::new(Expr::Num(*n)),
+            ))
+        }
+        _ => Ok(Expr::Unary(Operator::Absolute, Box::new(parser::parse(expr)?))),
+    }
+}
+
+
