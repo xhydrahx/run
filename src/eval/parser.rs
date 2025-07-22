@@ -6,13 +6,14 @@ use std::{iter::Peekable, slice::Iter};
 pub mod identifier;
 pub mod group;
 pub mod number;
+pub mod prefix;
 
 pub fn parse(tokens: Vec<Token>) -> Result<Expr, String> {
     primary(&mut tokens.iter().peekable(), 0)
 }
 
 pub fn primary(tokens: &mut Peekable<Iter<Token>>, precedence: u8) -> Result<Expr, String> {
-    let mut left = prefix(tokens)?;
+    let mut left = prefix::prefix(tokens)?;
 
     while let Some(&token) = tokens.peek() {
         if token.precedence() < precedence {
@@ -22,27 +23,6 @@ pub fn primary(tokens: &mut Peekable<Iter<Token>>, precedence: u8) -> Result<Exp
     }
 
     Ok(left)
-}
-
-fn prefix(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
-    match tokens.next() {
-            Some(Token::Num(n)) => number::num(tokens, *n),
-            Some(Token::LeftParen) => Ok(group::paren(tokens)?),
-            Some(Token::Minus) => match tokens.next() {
-                Some(Token::Num(n)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(number::num(tokens, *n)?))),
-                Some(Token::LeftParen) => Ok(Expr::Unary(Operator::Subtraction, Box::new(group::paren(tokens)?))),
-                Some(Token::Identifier(id)) => Ok(Expr::Unary(Operator::Subtraction, Box::new(identifier::ident(tokens, id)?))),
-                Some(token) => Err(format!("Unexpected token '{}' after unary '-': Expected a number, an opening parenthesis '(', or a valid unary expression.", token)),
-                None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
-            },
-            Some(Token::Identifier(id)) => identifier::ident(tokens, id),
-            Some(Token::Bar) => group::absolute(tokens),
-            Some(token) => Err(format!(
-                "Unexpected token '{}' encountered: Expected a number, an opening parenthesis '(', or a unary operator.",
-                token
-            )),
-            None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
-        }
 }
 
 fn infix(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, String> {
