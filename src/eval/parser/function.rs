@@ -5,7 +5,7 @@ use crate::eval::{
     types::{Expr, Operator, Token},
 };
 
-pub fn func(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, String> {
+pub fn parse(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, String> {
     match tokens.next() {
         Some(Token::LeftParen) => match id {
             "root" => {
