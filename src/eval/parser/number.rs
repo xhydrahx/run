@@ -1,7 +1,7 @@
 use std::{iter::Peekable, slice::Iter};
 
 use crate::eval::{
-    parser::{group, identifier},
+    parser::{delimeter, identifier},
     types::{Expr, Operator, Token},
 };
 
@@ -12,7 +12,7 @@ pub fn num(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, String>
             Ok(Expr::Binary(
                 Box::new(Expr::Num(num)),
                 Operator::Multiplication,
-                Box::new(group::paren(tokens)?),
+                Box::new(delimeter::paren(tokens)?),
             ))
         }
         Some(Token::Identifier(id)) => {
