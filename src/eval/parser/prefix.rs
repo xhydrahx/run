@@ -1,9 +1,11 @@
 use std::{iter::Peekable, slice::Iter};
 
 use crate::eval::{
-    parser::{delimeter, identifier, number},
+    parser::{delimeter, number},
     types::{Expr, Operator, Token},
 };
+
+pub mod identifier;
 
 pub fn parse(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
     match tokens.next() {
