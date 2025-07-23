@@ -1,7 +1,6 @@
 use crate::eval::types::{Expr, Token};
 use std::{iter::Peekable, slice::Iter};
 
-pub mod identifier;
 pub mod delimeter;
 pub mod number;
 pub mod prefix;
