@@ -17,7 +17,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, Strin
 
                     radicand.push(next_token.to_owned());
                 }
-                Ok(Expr::Function(
+                Ok(Expr::Func(
                     id.to_string(),
                     vec![
                         Box::new(parser::parse(radicand)?),
@@ -25,14 +25,14 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, Strin
                     ],
                 ))
             }
-            "log" => Ok(Expr::Function(
+            "log" => Ok(Expr::Func(
                 id.to_string(),
                 vec![
                     Box::new(Expr::Num(10.0)),
                     Box::new(delimeter::paren(tokens)?),
                 ],
             )),
-            _ => Ok(Expr::Function(
+            _ => Ok(Expr::Func(
                 id.to_string(),
                 vec![Box::new(delimeter::paren(tokens)?)],
             )),
@@ -47,7 +47,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, Strin
                 base.push(next_token.to_owned());
             }
 
-            Ok(Expr::Function(
+            Ok(Expr::Func(
                 id.to_string(),
                 vec![
                     Box::new(parser::parse(base)?),
@@ -81,7 +81,7 @@ pub fn absolute(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
         Some(Token::Num(n)) => {
             tokens.next();
 
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(Expr::Unary(
                     Operator::Absolute,
                     Box::new(parser::parse(expr)?),

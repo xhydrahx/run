@@ -9,9 +9,9 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, Strin
     {
         let variables = environment::fetch_variables().lock().unwrap();
         for expr in variables.iter() {
-            if let Expr::Variable(ident, value) = expr {
+            if let Expr::Var(ident, value) = expr {
                 if ident.as_str() == id {
-                    return Ok(Expr::Variable(ident.to_string(), value.to_owned()));
+                    return Ok(Expr::Var(ident.to_string(), value.to_owned()));
                 }
             }
         }
@@ -27,6 +27,6 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, Strin
     tokens.next();
     let expr = parser::primary(tokens, 0)?;
     let mut variables = environment::fetch_variables().lock().unwrap();
-    variables.push(Expr::Variable(id.to_string(), Box::new(expr)));
+    variables.push(Expr::Var(id.to_string(), Box::new(expr)));
     return Ok(Expr::Num(1.0));
 }
