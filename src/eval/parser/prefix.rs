@@ -1,7 +1,7 @@
 use std::{iter::Peekable, slice::Iter};
 
 use crate::eval::{
-    parser::{delimeter, function, identifier, number},
+    parser::{delimeter, identifier, number},
     types::{Expr, Operator, Token},
 };
 
@@ -17,7 +17,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>) -> Result<Expr, String> {
                 None => Err("Unexpected end of expression: Expected a number, '(', or unary operator before end.".into()),
             },
             Some(Token::Identifier(id)) => identifier::parse(tokens, id),
-            Some(Token::Bar) => function::absolute(tokens),
+            Some(Token::Bar) => identifier::function::absolute(tokens),
             Some(token) => Err(format!(
                 "Unexpected token '{}' encountered: Expected a number, an opening parenthesis '(', or a unary operator.",
                 token

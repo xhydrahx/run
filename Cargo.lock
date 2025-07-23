@@ -38,7 +38,7 @@ dependencies = [
 
 [[package]]
 name = "run"
-version = "0.2.55"
+version = "0.2.6"
 dependencies = [
  "num-bigint",
  "num-traits",
