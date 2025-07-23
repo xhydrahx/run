@@ -57,9 +57,9 @@ impl std::fmt::Display for Token {
 #[derive(Debug, Clone)]
 pub enum Expr {
     Num(f64),
-    Variable(String, Box<Expr>),
-    Function(String, Vec<Box<Expr>>),
-    Binary(Box<Expr>, Operator, Box<Expr>),
+    Var(String, Box<Expr>),
+    Func(String, Vec<Box<Expr>>),
+    Bin(Box<Expr>, Operator, Box<Expr>),
     Unary(Operator, Box<Expr>),
 }
 

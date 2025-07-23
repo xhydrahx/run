@@ -10,7 +10,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, Str
     match token {
         Token::Plus => {
             let right = primary(tokens, token.precedence() + 1)?;
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(left),
                 Operator::Addition,
                 Box::new(right),
@@ -18,7 +18,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, Str
         }
         Token::Minus => {
             let right = primary(tokens, token.precedence() + 1)?;
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(left),
                 Operator::Subtraction,
                 Box::new(right),
@@ -26,7 +26,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, Str
         }
         Token::Star => {
             let right = primary(tokens, token.precedence() + 1)?;
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(left),
                 Operator::Multiplication,
                 Box::new(right),
@@ -34,7 +34,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, Str
         }
         Token::Slash => {
             let right = primary(tokens, token.precedence() + 1)?;
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(left),
                 Operator::Division,
                 Box::new(right),
@@ -42,7 +42,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, Str
         }
         Token::Carrot => {
             let right = primary(tokens, token.precedence())?;
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(left),
                 Operator::Exponent,
                 Box::new(right),
@@ -62,32 +62,32 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, Str
 
             Ok(Expr::Unary(Operator::Factorial(amount), Box::new(left)))
         }
-        Token::LeftParen => Ok(Expr::Binary(
+        Token::LeftParen => Ok(Expr::Bin(
             Box::new(left),
             Operator::Multiplication,
             Box::new(delimeter::paren(tokens)?),
         )),
         Token::Percent => match left {
-            Expr::Num(n) => Ok(Expr::Binary(
+            Expr::Num(n) => Ok(Expr::Bin(
                 Box::new(Expr::Num(1.0)),
                 Operator::Percent,
                 Box::new(Expr::Num(n)),
             )),
-            Expr::Binary(l, op, r) => Ok(Expr::Binary(
+            Expr::Bin(l, op, r) => Ok(Expr::Bin(
                 l.clone(),
                 op,
-                Box::new(Expr::Binary(l, Operator::Percent, r)),
+                Box::new(Expr::Bin(l, Operator::Percent, r)),
             )),
             Expr::Unary(op, r) => Ok(Expr::Unary(
                 op,
-                Box::new(Expr::Binary(r.clone(), Operator::Percent, r)),
+                Box::new(Expr::Bin(r.clone(), Operator::Percent, r)),
             )),
-            Expr::Function(id, args) => Ok(Expr::Binary(
-                Box::new(Expr::Function(id.clone(), args.clone())),
+            Expr::Func(id, args) => Ok(Expr::Bin(
+                Box::new(Expr::Func(id.clone(), args.clone())),
                 Operator::Percent,
-                Box::new(Expr::Function(id, args)),
+                Box::new(Expr::Func(id, args)),
             )),
-            Expr::Variable(_, value) => Ok(Expr::Binary(
+            Expr::Var(_, value) => Ok(Expr::Bin(
                 Box::new(Expr::Num(1.0)),
                 Operator::Percent,
                 value,
@@ -95,7 +95,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, left: Expr) -> Result<Expr, Str
         },
         Token::Equal => {
             let right = primary(tokens, 0)?;
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(left),
                 Operator::Equal,
                 Box::new(right),

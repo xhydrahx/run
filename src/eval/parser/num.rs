@@ -9,7 +9,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, Strin
     match tokens.peek() {
         Some(Token::LeftParen) => {
             tokens.next();
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(Expr::Num(num)),
                 Operator::Multiplication,
                 Box::new(delimeter::paren(tokens)?),
@@ -17,7 +17,7 @@ pub fn parse(tokens: &mut Peekable<Iter<Token>>, num: f64) -> Result<Expr, Strin
         }
         Some(Token::Identifier(id)) => {
             tokens.next();
-            Ok(Expr::Binary(
+            Ok(Expr::Bin(
                 Box::new(Expr::Num(num)),
                 Operator::Multiplication,
                 Box::new(ident::parse(tokens, id)?),
