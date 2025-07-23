@@ -1,6 +1,9 @@
 use std::{iter::Peekable, slice::Iter};
 
-use crate::eval::{environment, parser, types::{Expr, Token}};
+use crate::eval::{
+    environment, parser,
+    types::{Expr, Token},
+};
 
 pub fn parse(tokens: &mut Peekable<Iter<Token>>, id: &str) -> Result<Expr, String> {
     {
