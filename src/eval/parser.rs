@@ -2,7 +2,7 @@ use crate::eval::types::{Expr, Token};
 use std::{iter::Peekable, slice::Iter};
 
 pub mod delimeter;
-pub mod number;
+pub mod num;
 pub mod prefix;
 pub mod infix;
 
