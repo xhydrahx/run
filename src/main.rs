@@ -1,5 +1,5 @@
 mod calc;
-mod eval;
+mod interpreter;
 
 fn main() {
     calc::run();

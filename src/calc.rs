@@ -1,21 +1,27 @@
-use crate::eval;
 use std::io::{Write, stdin, stdout};
 
+struct Calc {
+    prompt: String,
+}
+
+impl Calc {
+    fn new(prompt: String) -> Self {
+        Self { prompt }
+    }
+
+    fn ask(&self) -> String {
+        let mut s = String::new();
+        print!("{}", self.prompt);
+        let _ = stdout().flush();
+        let _ = stdin().read_line(&mut s);
+        s.trim().to_string()
+    }
+}
+
 pub fn run() {
-    let mut input = String::new();
+    let calc = Calc::new("> ".into());
 
     loop {
-        print!("> ");
-
-        input.clear();
-        let _ = stdout().flush();
-        stdin()
-            .read_line(&mut input)
-            .expect("Did not enter a string");
-
-        match eval::evaluate(input.trim()) {
-            Ok(n) => println!("=> {}", n),
-            Err(e) => eprintln!("=> {}", e),
-        }
+        println!("{}", calc.ask());
     }
 }
