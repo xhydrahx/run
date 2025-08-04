@@ -10,6 +10,22 @@ pub enum Token {
     Slash,
 }
 
+impl std::fmt::Display for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let string = match self {
+            Token::Atomic(a) => a.to_string(),
+            Token::Plus => "+".to_string(),
+            Token::Minus => "-".to_string(),
+            Token::Star => "*".to_string(),
+            Token::Slash => "/".to_string(),
+
+        };
+
+        write!(f, "{}", string)
+    }
+}
+
+
 pub fn lex(input: String) -> Result<Vec<Token>, CalcError> {
     let mut source = input.chars().peekable();
     let mut tokens = Vec::new();
