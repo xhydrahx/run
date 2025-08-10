@@ -1,6 +1,6 @@
 use crate::interpreter::error::CalcError;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Token {
     Atomic(f64),
 
