@@ -18,13 +18,11 @@ impl std::fmt::Display for Token {
             Token::Minus => "-".to_string(),
             Token::Star => "*".to_string(),
             Token::Slash => "/".to_string(),
-
         };
 
         write!(f, "{}", string)
     }
 }
-
 
 pub fn lex(input: String) -> Result<Vec<Token>, CalcError> {
     let mut source = input.chars().peekable();
@@ -32,7 +30,7 @@ pub fn lex(input: String) -> Result<Vec<Token>, CalcError> {
 
     while let Some(ch) = source.peek() {
         match ch {
-            '0'..'9' | '.' => {
+            ch if ch.is_numeric() || ch == &'.' => {
                 let mut a = String::new();
 
                 while let Some(c) = source.peek() {
